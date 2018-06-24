@@ -1,4 +1,5 @@
-%%% @doc module soda_nif
+%%% @doc module soda_nif lowest level interface to libsodium bindings 
+%%%  This module should not be used directly. 
 %%% @end
 %%% @private
 -module(soda_nif).
