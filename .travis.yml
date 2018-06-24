@@ -1,13 +1,12 @@
 language: erlang
+sudo: required
 otp_release:
-  - 20.3
   - 21.0
-before_script:
+
+install:
   - wget https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz 
-  - tar xzf libsodium-1.0.16.tar.gz 
-  - cd libsodium-1.0.16  
-  - ./configure --prefix=/usr && make && make install
-  - cd ..
+  - tar -zxvf libsodium-1.0.16.tar.gz 
+  - pushd libsodium-1.0.16  ./configure --prefix=/usr && make && make install && popd
 
 script:
   - rebar3 proper
