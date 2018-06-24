@@ -1,14 +1,11 @@
 #include "erl_nif.h"
-
 #include <string.h>
-
 #include <sodium.h>
 
 #define ATOM_OK "ok"
 #define ATOM_ERROR "error"
 #define ATOM_TRUE "true"
 #define ATOM_FALSE "false"
-
 
 static
 int enif_sodium_load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
@@ -52,7 +49,6 @@ ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_keygen(ErlNifEnv *env, int 
   crypto_aead_xchacha20poly1305_ietf_keygen(key.data);
 	return enif_make_binary(env, &key);
 }
-
 
 static
 ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_encrypt(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
@@ -104,10 +100,22 @@ ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv *env, int
 }
 
 static ErlNifFunc nif_funcs[] = {
-  {"randombytes", 1, enif_randombytes, ERL_NIF_DIRTY_JOB_CPU_BOUND},
-  {"crypto_aead_xchacha20poly1305_ietf_keygen", 0, enif_crypto_aead_xchacha20poly1305_ietf_keygen, ERL_NIF_DIRTY_JOB_CPU_BOUND},
-  {"crypto_aead_xchacha20poly1305_ietf_encrypt", 4, enif_crypto_aead_xchacha20poly1305_ietf_encrypt, ERL_NIF_DIRTY_JOB_CPU_BOUND},
-  {"crypto_aead_xchacha20poly1305_ietf_decrypt", 4, enif_crypto_aead_xchacha20poly1305_ietf_decrypt, ERL_NIF_DIRTY_JOB_CPU_BOUND}
+  {
+    "randombytes", 1, 
+    enif_randombytes, ERL_NIF_DIRTY_JOB_CPU_BOUND
+  },
+  {
+    "crypto_aead_xchacha20poly1305_ietf_keygen", 0, 
+    enif_crypto_aead_xchacha20poly1305_ietf_keygen, ERL_NIF_DIRTY_JOB_CPU_BOUND
+  },
+  {
+    "crypto_aead_xchacha20poly1305_ietf_encrypt", 4, 
+    enif_crypto_aead_xchacha20poly1305_ietf_encrypt, ERL_NIF_DIRTY_JOB_CPU_BOUND
+  },
+  {"crypto_aead_xchacha20poly1305_ietf_decrypt", 4, 
+    enif_crypto_aead_xchacha20poly1305_ietf_decrypt, 
+    ERL_NIF_DIRTY_JOB_CPU_BOUND
+  }
 };
 
 ERL_NIF_INIT(soda_nif, nif_funcs, enif_sodium_load, NULL, NULL, NULL);

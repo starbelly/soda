@@ -1,12 +1,5 @@
-image: erlang:21
+image: registry.gitlab.com/starbelly/soda:latest
 
 test:
-  before_script:
-    - wget https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz 
-    - tar xzf libsodium-1.0.16.tar.gz 
-    - cd libsodium-1.0.16  
-    - ./configure --prefix=/usr && make && make install
-    - cd ..
   script:
-    - rebar3 do proper --cover
-    - rebar3 cover -v
+    - rebar3 do proper --cover --numtests 500, cover -v

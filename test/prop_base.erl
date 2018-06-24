@@ -2,7 +2,7 @@
 -include_lib("proper/include/proper.hrl").
 
 -define(AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES, 24).
--define(AEAD_XCHACHA20POLY1305_IETF_KEYBYTES, 24).
+-define(AEAD_XCHACHA20POLY1305_IETF_KEYBYTES, 32).
 -define(AEAD_XCHACHA20POLY1305_IETF_ABYTES, 24).
 -define(AEAD_XCHACHA20POLY1305_IETF_MESSAGEBYTES_MAX, 24).
 
@@ -10,13 +10,7 @@
 %%%%%%%%%%%%%%%%%%
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
-prop_test() ->
-    ?FORALL(Type, term(),
-        begin
-            boolean(Type)
-        end).
 
-%% RANDOMBYTES
 %% ------------------------------------------------------------
 %% * randombytes/1
 prop_randombytes() ->
@@ -43,7 +37,8 @@ prop_randombytes_neg_int_fail() ->
 %% * aead_chacha20poly1305_decrypt/4,
 prop_aead_xchacha20poly1305_ietf() ->
   ?FORALL({Msg, Ad, Nonce, Key},
-          {binary(), binary(), binary(24), binary(32)},
+          {binary(), binary(), binary(?AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES),
+           binary(?AEAD_XCHACHA20POLY1305_IETF_KEYBYTES)},
   begin
     EncryptMsg = soda:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, Nonce, Key),
     equals(soda:aead_xchacha20poly1305_ietf_decrypt(EncryptMsg, Ad, Nonce, Key), Msg)
@@ -53,7 +48,7 @@ prop_nonce() ->
   ?FORALL({},{},
   begin
     Props = [
-         {aead_xchacha20poly1305_ietf, 24}
+         {aead_xchacha20poly1305_ietf, ?AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES}
         ],
     Pred = fun({N,S}) -> erlang:size(soda:nonce(N)) == S end, 
     [] = lists:dropwhile(Pred, Props),
@@ -73,12 +68,13 @@ prop_aead_xchacha20poly1305_ietf_keygen() ->
   ?FORALL({},{},
   begin
     K = soda:aead_xchacha20poly1305_ietf_keygen(),
-    equals(erlang:size(K), 32)
+    equals(erlang:size(K), ?AEAD_XCHACHA20POLY1305_IETF_KEYBYTES)
   end).
 
 prop_aead_xchacha20poly1305_ietf_msg_fail() ->
   ?FORALL({Msg, Ad, Nonce, Key},
-          {binary(), binary(), binary(24), binary(32)},
+          {binary(), binary(), binary(?AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES),
+           binary(?AEAD_XCHACHA20POLY1305_IETF_KEYBYTES)},
   begin
     EncryptMsg = soda:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, Nonce, Key),
     case soda:aead_xchacha20poly1305_ietf_decrypt(<<0:8, EncryptMsg/binary>>,
@@ -90,7 +86,8 @@ prop_aead_xchacha20poly1305_ietf_msg_fail() ->
 
 prop_aead_xchacha20poly1305_ietf_ad_fail() ->
   ?FORALL({Msg, Ad, Nonce, Key},
-          {binary(), binary(), binary(24), binary(32)},
+          {binary(), binary(), binary(?AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES),
+           binary(?AEAD_XCHACHA20POLY1305_IETF_KEYBYTES)},
   begin
     EncryptMsg = soda:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, Nonce, Key),
     case soda:aead_xchacha20poly1305_ietf_decrypt(EncryptMsg, <<0:8, Ad/binary>>, Nonce, Key) of
@@ -185,10 +182,7 @@ prop_aead_xchacha20poly1305_ietf_key_size_fail() ->
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
 %%%%%%%%%%%%%%%
-boolean(_) -> true.
 
 %%%%%%%%%%%%%%%%%%
 %%% Generators %%%
 %%%%%%%%%%%%%%%%%%
-
-

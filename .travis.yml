@@ -9,4 +9,4 @@ install:
   - pushd libsodium-1.0.16 && ./configure --prefix=/usr && make && sudo make install && popd
 
 script:
-  - rebar3 proper
+  - rebar3 do proper --cover --numtests 500, cover -v
