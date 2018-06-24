@@ -8,4 +8,5 @@ test:
     - ./configure --prefix=/usr && make && make install
     - cd ..
   script:
-    - rebar3 proper
+    - rebar3 do proper --cover
+    - rebar3 cover -v
