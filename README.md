@@ -35,27 +35,23 @@ Soda provides bindings to the Sodium crypto library ([libsodium](https://downloa
 
 4. Decrypt the ciphered message using our additional data, nonce, and key
 ```erlang
-4> D =  soda:aead_xchacha20poly1305_ietf_decrypt(C, <<"Hello, Joe.">>, N, K).
+4> D = soda:aead_xchacha20poly1305_ietf_decrypt(C, <<"Hello, Joe.">>, N, K).
 <<"Hello, Mike?">>
 ```
 
 ## Installation
 
-# Rebar
+# Rebar3 
 
 ```erlang
-{deps, [
-    {soda, "0.1.0"}
-]}
+{deps, [{soda, "0.1.0"}]}
 ```
 
 # Mix 
 
 ```elixir
 def deps do
-  [
-    {:soda, "~> 0.1.0"}
-  ]
+  [{:soda, "~> 0.1.0"}]
 end
 ```
 
