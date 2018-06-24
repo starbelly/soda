@@ -3,14 +3,32 @@
 
 Sweet libsodium bindings for Erlang and Elixir
 
-# About 
+## About 
 
 Soda provides bindings to the Sodium crypto library ([libsodium](https://download.libsodium.org/doc/)).
 
-# Usage
+## Installation
 
-# AEAD encryption 
+### Rebar3 
 
+```erlang
+{deps, [{soda, "0.1.0"}]}
+```
+
+### Mix 
+
+```elixir
+def deps do
+  [{:soda, "~> 0.1.0"}]
+end
+```
+
+
+## Usage
+
+### AEAD constructions
+
+#### XChaCha20-Poly1305 construction
 
 1. Generate a public nonce
 ```erlang
@@ -39,26 +57,11 @@ Soda provides bindings to the Sodium crypto library ([libsodium](https://downloa
 <<"Hello, Mike?">>
 ```
 
-## Installation
 
-# Rebar3 
-
-```erlang
-{deps, [{soda, "0.1.0"}]}
-```
-
-# Mix 
-
-```elixir
-def deps do
-  [{:soda, "~> 0.1.0"}]
-end
-```
-
-# Reference
+## Reference
 
  - [libsodium](https://download.libsodium.org/doc/)
 
-# Inspirado 
+## Inspirado 
 
 - [jlouis/enacl](https://github.com/jlouis/enacl)
