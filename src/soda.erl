@@ -1,4 +1,4 @@
-%%% @doc module soda provides binding to libsodium for Erlang and Elixir
+%%% @doc module soda provides binding to libsodium for Erlang
 %%% @end.
 -module(soda).
 
