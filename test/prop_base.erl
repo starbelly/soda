@@ -32,7 +32,8 @@ prop_randombytes_neg_int_fail() ->
         soda:randombytes(I),
         false
     catch
-        error:badarg -> true
+        error:badarg          -> true;
+        error:function_clause -> true
     end    
   end).
 
