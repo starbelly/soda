@@ -1,4 +1,5 @@
-# Soda
+Soda [![Hex Version](https://img.shields.io/hexpm/v/soda.svg)](https://hex.pm/packages/soda) [![Gitlab-CI](https://gitlab.com/starbelly/soda/badges/master/pipeline.svg)](https://gitlab.com/starbelly/soda/commits/master) ![Soda](assets/logo-120x140.png)
+============
 
 Tasty and refreshing libsodium bindings for Erlang and Elixir
 
@@ -22,3 +23,10 @@ def deps do
 end
 ```
 
+# Reference
+
+ - [libsodium](https://download.libsodium.org/doc/)
+
+# Inspirado 
+
+- [enacl](https://github.com/jlouis/enacl)
