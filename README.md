@@ -14,6 +14,10 @@ Working with Soda is simple in both Erlang and Elixr.
 1> N = soda:nonce(aead_xchacha20poly1305_ietf).
 <<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
   188,73,136,216,201,77,183,29,144>>
+2> {ok, H} = soda:passwd("foo").
+{ok,<<"$argon2id$v=19$m=65536,t=2,p=1$Isq7U9BICzjQKL7HhrpdtA$8WEFXpc6a3ef+DMZELmmxA23xTCQq9CpN6/NPHXBUPg">>}
+2> true = soda:passwd_verify(H, "foo").
+true
 ```
 
 - ***Elixir***
@@ -21,6 +25,10 @@ Working with Soda is simple in both Erlang and Elixr.
 iex(1)> n = :soda.nonce(:aead_xchacha20poly1305_ietf)
 <<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
   188,73,136,216,201,77,183,29,144>>
+iex(2)> {:ok, h} = :soda.passwd("foo")
+{:ok,<<"$argon2id$v=19$m=65536,t=2,p=1$Isq7U9BICzjQKL7HhrpdtA$8WEFXpc6a3ef+DMZELmmxA23xTCQq9CpN6/NPHXBUPg">>}
+iex(3)> true = :soda.passwd_verify(h, "foo")
+true
 ```
 
 ## Installation
@@ -57,6 +65,15 @@ end
 soda:rand(42).
 <<83,247,61,202,83,171,99,56,51,108,141,82,255,186,41,26,
   215,4,229,148,72,204,131,248,8,86,196,104,95,...>>
+```
+
+#### passwd/1 and passwd_verify/2
+
+```erlang
+1> {ok, H} = soda:passwd("thuper thecret").
+{ok,<<"$argon2id$v=19$m=65536,t=2,p=1$rPQCfeJLuKMoLei+d5o9uA$7LsyBNEnYVq2JOpTgD2cil+swou5gvewoEjcuQznYq0">>}
+2> true = soda:passwd_verify(H, "thuper thecret").
+true
 ```
 
 ### Soda API

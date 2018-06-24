@@ -51,6 +51,19 @@ prop_nonce_fail() ->
     end
   end).
 
+prop_passwd() ->
+    ?FORALL({Passwd}, {non_empty(binary())},
+            begin
+                {ok, Str} = soda:passwd(Passwd),
+                is_binary(Str)
+            end).
+
+prop_passwd_verify() ->
+    ?FORALL({Passwd}, {non_empty(binary())},
+            begin
+                {ok, HashStr} = soda:passwd(Passwd),
+                equals(soda:passwd_verify(HashStr, Passwd), true)
+            end).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%

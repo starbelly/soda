@@ -8,7 +8,10 @@
 -define(LIBNAME, soda_nif).
 
 -export([
-         randombytes/1,
+         crypto_randombytes/1,
+         crypto_pwhash/2,
+         crypto_pwhash_str/1,
+         crypto_pwhash_str_verify/2,
          crypto_aead_xchacha20poly1305_ietf_encrypt/4,
          crypto_aead_xchacha20poly1305_ietf_decrypt/4,
          crypto_aead_xchacha20poly1305_ietf_keygen/0
@@ -19,7 +22,11 @@
 init() ->
     load_soda_nif().
 
-randombytes(_RequestedSize)                                                 -> erlang:nif_error(nif_not_loaded).
+
+crypto_pwhash(_Password, _Salt)                                             -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str(_Password)                                                -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str_verify(_Hash,_Password)                                   -> erlang:nif_error(nif_not_loaded).
+crypto_randombytes(_RequestedSize)                                          -> erlang:nif_error(nif_not_loaded).
 crypto_aead_xchacha20poly1305_ietf_keygen()                                 -> erlang:nif_error(nif_not_loaded).
 crypto_aead_xchacha20poly1305_ietf_encrypt(_Msg, _Ad, _Nonce, _Key)         -> erlang:nif_error(nif_not_loaded).
 crypto_aead_xchacha20poly1305_ietf_decrypt(_Ciphered, _AD, _Nonce, _Key)    -> erlang:nif_error(nif_not_loaded).

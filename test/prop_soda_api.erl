@@ -11,6 +11,27 @@
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
 
+prop_pwhash() ->
+    ?FORALL({Passwd, Salt}, {non_empty(binary()), binary(16)},
+            begin
+                {ok, Bin} = soda_api:pwhash(Passwd, Salt),
+                is_binary(Bin)
+            end).
+
+prop_pwhash_str() ->
+    ?FORALL({Passwd}, {non_empty(binary())},
+            begin
+                {ok, Str} = soda_api:pwhash_str(Passwd),
+                is_binary(Str)
+            end).
+
+prop_pwhash_str_verify() ->
+    ?FORALL({Passwd}, {non_empty(binary())},
+            begin
+                {ok, HashStr} = soda_api:pwhash_str(Passwd),
+                equals(soda_api:pwhash_str_verify(HashStr, Passwd), true)
+            end).
+
 %% ------------------------------------------------------------
 %% * randombytes/1
 prop_randombytes() ->
