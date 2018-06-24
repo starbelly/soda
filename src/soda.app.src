@@ -1,0 +1,14 @@
+{application, soda,
+ [{description, "Tasty and refreshing libsodium binding for Erlang and Elixir"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+  {maintainers, ["Bryan Paxton"]},
+  {licenses, ["MIT"]},
+  {links, [{"Github", "https://github.com/starbelly/soda"}, {"Gitlab", "https://gitlab.com/starbelly/soda"} ]}
+ ]}.
