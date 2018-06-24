@@ -5,7 +5,23 @@ Libsodium bindings for Erlang
 
 ## About 
 
-Soda provides bindings to the Sodium crypto library ([libsodium](https://download.libsodium.org/doc/)).
+Soda provides Erlang bindings to the Sodium Crypto Library ([libsodium](https://download.libsodium.org/doc/)).
+
+Working with Soda is simple in both Erlang and Elixr. 
+
+- ***Erlang***
+```erlang
+1> N = soda:nonce(aead_xchacha20poly1305_ietf).
+<<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
+  188,73,136,216,201,77,183,29,144>>
+```
+
+- ***Elixir***
+```elixir
+iex(1)> n = :soda.nonce(:aead_xchacha20poly1305_ietf)
+<<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
+  188,73,136,216,201,77,183,29,144>>
+```
 
 ## Installation
 
@@ -22,7 +38,6 @@ def deps do
   [{:soda, "~> 0.1.0"}]
 end
 ```
-
 
 ## Usage
 
@@ -56,7 +71,6 @@ end
 4> D = soda:aead_xchacha20poly1305_ietf_decrypt(C, <<"Hello, Joe.">>, N, K).
 <<"Hello, Mike?">>
 ```
-
 
 ## Reference
 
