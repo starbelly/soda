@@ -72,7 +72,7 @@ prop_aead_xchacha20poly1305_ietf_keygen() ->
   ?FORALL({},{},
   begin
     K = soda:aead_xchacha20poly1305_ietf_keygen(),
-    equals(erlang:size(K), 32),
+    equals(erlang:size(K), 32)
   end).
 
 prop_aead_xchacha20poly1305_ietf_msg_fail() ->
