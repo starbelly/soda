@@ -44,26 +44,6 @@ ERL_NIF_TERM enif_randombytes(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[
  */
 
 static
-ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_KEYBYTES(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
-  return enif_make_int64(env, crypto_aead_xchacha20poly1305_ietf_KEYBYTES);
-}
-
-static
-ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_NPUBBYTES(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
-  return enif_make_int64(env, crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
-}
-
-static
-ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_ABYTES(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
-  return enif_make_int64(env, crypto_aead_xchacha20poly1305_ietf_ABYTES);
-}
-
-static
-ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
-  return enif_make_int64(env, crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX);
-}
-
-static
 ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_keygen(ErlNifEnv *env, int argc, ERL_NIF_TERM const argv[]) {
   ErlNifBinary key;
   if (0 != argc) return enif_make_badarg(env);
@@ -125,10 +105,6 @@ ERL_NIF_TERM enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv *env, int
 
 static ErlNifFunc nif_funcs[] = {
   {"randombytes", 1, enif_randombytes, ERL_NIF_DIRTY_JOB_CPU_BOUND},
-  {"crypto_aead_xchacha20poly1305_ietf_KEYBYTES", 0, enif_crypto_aead_xchacha20poly1305_ietf_KEYBYTES},
-  {"crypto_aead_xchacha20poly1305_ietf_NPUBBYTES", 0, enif_crypto_aead_xchacha20poly1305_ietf_NPUBBYTES},
-  {"crypto_aead_xchacha20poly1305_ietf_ABYTES", 0, enif_crypto_aead_xchacha20poly1305_ietf_ABYTES},
-  {"crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX", 0, enif_crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX},
   {"crypto_aead_xchacha20poly1305_ietf_keygen", 0, enif_crypto_aead_xchacha20poly1305_ietf_keygen, ERL_NIF_DIRTY_JOB_CPU_BOUND},
   {"crypto_aead_xchacha20poly1305_ietf_encrypt", 4, enif_crypto_aead_xchacha20poly1305_ietf_encrypt, ERL_NIF_DIRTY_JOB_CPU_BOUND},
   {"crypto_aead_xchacha20poly1305_ietf_decrypt", 4, enif_crypto_aead_xchacha20poly1305_ietf_decrypt, ERL_NIF_DIRTY_JOB_CPU_BOUND}
