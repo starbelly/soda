@@ -231,4 +231,4 @@ static ErlNifFunc nif_funcs[] = {
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND}
 };
 
-ERL_NIF_INIT(soda_nif, nif_funcs, enif_sodium_load, NULL, NULL, NULL);
+ERL_NIF_INIT(soda_api, nif_funcs, enif_sodium_load, NULL, NULL, NULL);

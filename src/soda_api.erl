@@ -2,6 +2,8 @@
 %%% @end.
 -module(soda_api).
 
+-define(APPNAME, soda).
+
 % AEAD Constructions
 -export([
          pwhash/2,
@@ -15,13 +17,18 @@
 % Random
 -export([randombytes/1]).
 
+-on_load(init/0).
+
+init() ->
+    load_soda_api().
+
 -spec pwhash(iodata(), binary()) -> {ok, binary()} | {error, term()}.
 pwhash(Str, Salt) ->
-    soda_nif:crypto_pwhash(Str, Salt).
+    crypto_pwhash(Str, Salt).
 
 -spec pwhash_str(iodata()) -> {ok, iodata()} | {error, term()}.
 pwhash_str(Password) ->
-    case soda_nif:crypto_pwhash_str(Password) of
+    case crypto_pwhash_str(Password) of
         {ok, Str} ->
             [X, _] =  binary:split(Str, <<0>>),
             {ok, X};
@@ -31,16 +38,16 @@ pwhash_str(Password) ->
 
 -spec pwhash_str_verify(binary(), iodata()) -> boolean().
 pwhash_str_verify(HashStr, Password) ->
-    soda_nif:crypto_pwhash_str_verify(iolist_to_binary([HashStr, 0]), Password).
+    crypto_pwhash_str_verify(iolist_to_binary([HashStr, 0]), Password).
 
 
 -spec randombytes(non_neg_integer()) -> binary().
 randombytes(N) when N >= 0 ->
-    soda_nif:crypto_randombytes(N).
+    crypto_randombytes(N).
 
 -spec aead_xchacha20poly1305_ietf_keygen() -> binary() | {error, term()}.
 aead_xchacha20poly1305_ietf_keygen() ->                                          
-    soda_nif:crypto_aead_xchacha20poly1305_ietf_keygen().
+    crypto_aead_xchacha20poly1305_ietf_keygen().
 
 -spec aead_xchacha20poly1305_ietf_encrypt(binary(), binary(), binary(),
                                           binary()) -> binary() | {error,
@@ -48,7 +55,7 @@ aead_xchacha20poly1305_ietf_keygen() ->
 aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key) when
       is_binary(Message) andalso is_binary(AD) andalso is_binary(Nonce) andalso
       is_binary(Key) ->
-    soda_nif:crypto_aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key).
+    crypto_aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key).
 
 -spec aead_xchacha20poly1305_ietf_decrypt(binary(), binary(), binary(),
                                           binary()) -> binary() | {error,
@@ -56,4 +63,27 @@ aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key) when
 aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when
       is_binary(CT) andalso is_binary(AD) andalso is_binary(Nonce) andalso
       is_binary(Key) ->
-    soda_nif:crypto_aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key).
+    crypto_aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key).
+
+%%% @private
+crypto_pwhash(_Password, _Salt)                                             -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str(_Password)                                                -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str_verify(_Hash,_Password)                                   -> erlang:nif_error(nif_not_loaded).
+crypto_randombytes(_RequestedSize)                                          -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_keygen()                                 -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_encrypt(_Msg, _Ad, _Nonce, _Key)         -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_decrypt(_Ciphered, _AD, _Nonce, _Key)    -> erlang:nif_error(nif_not_loaded).
+
+load_soda_api() -> 
+  SoName = case code:priv_dir(?APPNAME) of
+        {error, bad_name} ->
+            case filelib:is_dir(filename:join(["..", priv])) of
+                true ->
+                    filename:join(["..", priv, ?MODULE]);
+                _ ->
+                    filename:join([priv, ?MODULE])
+            end;
+        Dir ->
+            filename:join(Dir, ?MODULE)
+    end,
+    erlang:load_nif(SoName, 0).
