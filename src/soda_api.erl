@@ -51,7 +51,7 @@ aead_xchacha20poly1305_ietf_keygen() ->
                                           binary()) -> binary() | {error,
                                                                    term()}.
 aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key) when
-      is_binary(Message) andalso is_binary(AD) andalso is_binary(Nonce) andalso
+      is_bitstring(Message) andalso is_binary(AD) andalso is_binary(Nonce) andalso
       is_binary(Key) ->
     crypto_aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key).
 

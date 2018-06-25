@@ -51,18 +51,27 @@ prop_nonce_fail() ->
     end
   end).
 
-prop_passwd() ->
-    ?FORALL({Passwd}, {non_empty(binary())},
+
+prop_aead() ->
+    ?FORALL({Msg, Ad}, {non_empty(binary()), non_empty(binary())},
             begin
-                {ok, Str} = soda:passwd(Passwd),
+                {ok, Ct, N, K} = soda:aead_encrypt(Msg, Ad),
+                {ok, M} = soda:aead_decrypt(Ct, Ad, N, K),
+                equals(Msg, M)
+            end).
+
+prop_password_hash() ->
+    ?FORALL({Pass}, {non_empty(binary())},
+            begin
+                {ok, Str} = soda:password_hash(Pass),
                 is_binary(Str)
             end).
 
 prop_passwd_verify() ->
-    ?FORALL({Passwd}, {non_empty(binary())},
+    ?FORALL({Pass}, {non_empty(binary())},
             begin
-                {ok, HashStr} = soda:passwd(Passwd),
-                equals(soda:passwd_verify(HashStr, Passwd), true)
+                {ok, HashStr} = soda:password_hash(Pass),
+                equals(soda:password_verify(HashStr, Pass), true)
             end).
 
 %%%%%%%%%%%%%%%
