@@ -3,6 +3,7 @@
 -module(soda_api).
 
 -define(APPNAME, soda).
+-define(LIBNAME, soda_nif).
 
 % AEAD Constructions
 -export([
@@ -79,11 +80,11 @@ load_soda_api() ->
         {error, bad_name} ->
             case filelib:is_dir(filename:join(["..", priv])) of
                 true ->
-                    filename:join(["..", priv, ?MODULE]);
+                    filename:join(["..", priv, ?LIBNAME]);
                 _ ->
-                    filename:join([priv, ?MODULE])
+                    filename:join([priv, ?LIBNAME])
             end;
         Dir ->
-            filename:join(Dir, ?MODULE)
+            filename:join(Dir, ?LIBNAME)
     end,
     erlang:load_nif(SoName, 0).
