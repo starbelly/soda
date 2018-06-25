@@ -20,12 +20,11 @@ sodium_load(ErlNifEnv * env, void **priv_data, ERL_NIF_TERM load_info)
 static int
 sodium_upgrade(ErlNifEnv * env, void **priv, void **old_priv, ERL_NIF_TERM info)
 {
-	return sodium_load(env, priv, info);
+	return 0;
 }
 
 static void sodium_unload(ErlNifEnv * env, void *priv)
 {
-	enif_free(priv);
 	return;
 }
 
