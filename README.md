@@ -18,9 +18,9 @@ Working with Soda is simple in both Erlang and Elixr.
 1> N = soda:nonce(aead_xchacha20poly1305_ietf).
 <<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
   188,73,136,216,201,77,183,29,144>>
-2> {ok, H} = soda:passwd("foo").
+2> {ok, H} = soda:password_hash("foo").
 {ok,<<"$argon2id$v=19$m=65536,t=2,p=1$Isq7U9BICzjQKL7HhrpdtA$8WEFXpc6a3ef+DMZELmmxA23xTCQq9CpN6/NPHXBUPg">>}
-2> true = soda:passwd_verify(H, "foo").
+2> true = soda:password_verify(H, "foo").
 true
 ```
 
@@ -29,9 +29,9 @@ true
 iex(1)> n = :soda.nonce(:aead_xchacha20poly1305_ietf)
 <<115,97,120,157,28,208,118,165,137,95,122,152,195,49,52,
   188,73,136,216,201,77,183,29,144>>
-iex(2)> {:ok, h} = :soda.passwd("foo")
+iex(2)> {:ok, h} = :soda.password_hash("foo")
 {:ok,<<"$argon2id$v=19$m=65536,t=2,p=1$Isq7U9BICzjQKL7HhrpdtA$8WEFXpc6a3ef+DMZELmmxA23xTCQq9CpN6/NPHXBUPg">>}
-iex(3)> true = :soda.passwd_verify(h, "foo")
+iex(3)> true = :soda.password_verify(h, "foo")
 true
 ```
 
@@ -74,9 +74,9 @@ soda:rand(42).
 #### password_hash/1 and password_verify/2
 
 ```erlang
-1> {ok, H} = soda:passwd("thuper thecret").
+1> {ok, H} = soda:password_hash("thuper thecret").
 {ok,<<"$argon2id$v=19$m=65536,t=2,p=1$rPQCfeJLuKMoLei+d5o9uA$7LsyBNEnYVq2JOpTgD2cil+swou5gvewoEjcuQznYq0">>}
-2> true = soda:passwd_verify(H, "thuper thecret").
+2> true = soda:password_verify(H, "thuper thecret").
 true
 ```
 
