@@ -8,9 +8,25 @@
 #define ATOM_FALSE "false"
 
 static int
-enif_sodium_load(ErlNifEnv * env, void **priv_data, ERL_NIF_TERM load_info)
+sodium_load(ErlNifEnv * env, void **priv_data, ERL_NIF_TERM load_info)
 {
-	return sodium_init();
+	if (sodium_init() == -1) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+static int
+sodium_upgrade(ErlNifEnv * env, void **priv, void **old_priv, ERL_NIF_TERM info)
+{
+	return sodium_load(env, priv, info);
+}
+
+static void sodium_unload(ErlNifEnv * env, void *priv)
+{
+	enif_free(priv);
+	return;
 }
 
 static ERL_NIF_TERM soda_error(ErlNifEnv * env, char *error_atom)
@@ -231,4 +247,5 @@ static ErlNifFunc nif_funcs[] = {
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND}
 };
 
-ERL_NIF_INIT(soda_api, nif_funcs, enif_sodium_load, NULL, NULL, NULL);
+ERL_NIF_INIT(soda_api, nif_funcs, &sodium_load, NULL, &sodium_upgrade,
+	     &sodium_unload);

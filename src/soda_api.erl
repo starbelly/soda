@@ -34,6 +34,9 @@ init() ->
     end,
     erlang:load_nif(SoName, 0).
 
+
+upgrade(_Config) -> init().
+
 crypto_pwhash(_Password, _Salt)                                             -> erlang:nif_error(nif_not_loaded).
 crypto_pwhash_str(_Password)                                                -> erlang:nif_error(nif_not_loaded).
 crypto_pwhash_str_verify(_Hash,_Password)                                   -> erlang:nif_error(nif_not_loaded).
