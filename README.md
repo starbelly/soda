@@ -3,6 +3,10 @@
 
 Libsodium bindings for Erlang
 
+## Stability
+ The code behind Soda is stable, the API will not be considered stable until 1.0
+ and is very much subject to change until such time. Patience Daniel-san. 
+
 ## About
 
 Soda provides Erlang bindings to the Sodium Crypto Library ([libsodium](https://download.libsodium.org/doc/)).
@@ -67,13 +71,27 @@ soda:rand(42).
   215,4,229,148,72,204,131,248,8,86,196,104,95,...>>
 ```
 
-#### passwd/1 and passwd_verify/2
+#### password_hash/1 and password_verify/2
 
 ```erlang
 1> {ok, H} = soda:passwd("thuper thecret").
 {ok,<<"$argon2id$v=19$m=65536,t=2,p=1$rPQCfeJLuKMoLei+d5o9uA$7LsyBNEnYVq2JOpTgD2cil+swou5gvewoEjcuQznYq0">>}
 2> true = soda:passwd_verify(H, "thuper thecret").
 true
+```
+
+##### aead_encrypt/2 and aead_decrypt/4
+
+```erlang
+1> {ok, Ciphered, Nonce, Key} = soda:aead_encrypt(<<"Secret Msg">>, <<"Additional Data">>).
+{ok,<<183,123,21,95,51,26,85,197,41,226,96,91,26,28,16,
+      110,85,123,18,239,29,57,11,30,228,61>>,
+    <<238,32,82,106,137,223,37,173,68,177,216,210,169,168,126,
+      245,10,247,27,161,127,195,217,24>>,
+    <<8,108,139,115,235,95,95,44,128,74,18,186,2,207,2,83,79,
+      53,115,239,12,118,198,100,198,...>>}
+2> soda:aead_decrypt(Ciphered, <<"Additional Data">>, Nonce, Key).
+{ok,<<"Secret Msg">>}
 ```
 
 ### Soda API
