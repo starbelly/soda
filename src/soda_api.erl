@@ -20,31 +20,6 @@
 
 -on_load(init/0).
 
-init() ->
-  SoName = case code:priv_dir(?APPNAME) of
-        {error, bad_name} ->
-            case filelib:is_dir(filename:join(["..", priv])) of
-                true ->
-                    filename:join(["..", priv, ?LIBNAME]);
-                _ ->
-                    filename:join([priv, ?LIBNAME])
-            end;
-        Dir ->
-            filename:join(Dir, ?LIBNAME)
-    end,
-    erlang:load_nif(SoName, 0).
-
-
-upgrade(_Config) -> init().
-
-crypto_pwhash(_Password, _Salt)                                             -> erlang:nif_error(nif_not_loaded).
-crypto_pwhash_str(_Password)                                                -> erlang:nif_error(nif_not_loaded).
-crypto_pwhash_str_verify(_Hash,_Password)                                   -> erlang:nif_error(nif_not_loaded).
-crypto_randombytes(_RequestedSize)                                          -> erlang:nif_error(nif_not_loaded).
-crypto_aead_xchacha20poly1305_ietf_keygen()                                 -> erlang:nif_error(nif_not_loaded).
-crypto_aead_xchacha20poly1305_ietf_encrypt(_Msg, _Ad, _Nonce, _Key)         -> erlang:nif_error(nif_not_loaded).
-crypto_aead_xchacha20poly1305_ietf_decrypt(_Ciphered, _AD, _Nonce, _Key)    -> erlang:nif_error(nif_not_loaded).
-
 -spec pwhash(iodata(), binary()) -> {ok, binary()} | {error, term()}.
 pwhash(Str, Salt) ->
     crypto_pwhash(Str, Salt).
@@ -87,3 +62,29 @@ aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when
       is_binary(CT) andalso is_binary(AD) andalso is_binary(Nonce) andalso
       is_binary(Key) ->
     crypto_aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key).
+
+%%% @private
+init() ->
+  SoName = case code:priv_dir(?APPNAME) of
+        {error, bad_name} ->
+            case filelib:is_dir(filename:join(["..", priv])) of
+                true ->
+                    filename:join(["..", priv, ?LIBNAME]);
+                _ ->
+                    filename:join([priv, ?LIBNAME])
+            end;
+        Dir ->
+            filename:join(Dir, ?LIBNAME)
+    end,
+    erlang:load_nif(SoName, 0).
+
+
+crypto_pwhash(_Password, _Salt)                                             -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str(_Password)                                                -> erlang:nif_error(nif_not_loaded).
+crypto_pwhash_str_verify(_Hash,_Password)                                   -> erlang:nif_error(nif_not_loaded).
+crypto_randombytes(_RequestedSize)                                          -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_keygen()                                 -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_encrypt(_Msg, _Ad, _Nonce, _Key)         -> erlang:nif_error(nif_not_loaded).
+crypto_aead_xchacha20poly1305_ietf_decrypt(_Ciphered, _AD, _Nonce, _Key)    -> erlang:nif_error(nif_not_loaded).
+
+
