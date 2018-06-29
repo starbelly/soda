@@ -52,6 +52,14 @@ prop_randombytes_neg_int_fail() ->
     end    
   end).
 
+prop_sign_keypair() ->
+    ?FORALL({}, {},
+      begin
+        { _, _ } = soda_api:sign_keypair(),
+        true
+      end).
+
+
 %% AEAD XChaCha20Poly1305
 %% ------------------------------------------------------------
 %% * aead_chacha20poly1305_encrypt/4,
@@ -127,25 +135,25 @@ prop_aead_xchacha20poly1305_ietf_nonce_size_fail() ->
         soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, UnderSizedNonce, Key),
         false
     catch
-        error:badarg -> true
+        error:bad_nonce_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_decrypt(Msg, Ad, UnderSizedNonce, Key),
         false
     catch
-        error:badarg -> true
+        error:bad_nonce_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, OverSizedNonce, Key),
         false
     catch
-        error:badarg -> true
+        error:bad_nonce_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_decrypt(Msg, Ad, OverSizedNonce, Key),
         false
     catch
-        error:badarg -> true
+        error:bad_nonce_size -> true
     end
   end).
 
@@ -157,25 +165,25 @@ prop_aead_xchacha20poly1305_ietf_key_size_fail() ->
         soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, Nonce, UnderSizedKey),
         false
     catch
-        error:badarg -> true
+        error:bad_key_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_decrypt(Msg, Ad, Nonce, UnderSizedKey),
         false
     catch
-        error:badarg -> true
+        error:bad_key_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, Nonce, OverSizedKey),
         false
     catch
-        error:badarg -> true
+        error:bad_key_size -> true
     end,
     try
         soda_api:aead_xchacha20poly1305_ietf_decrypt(Msg, Ad, Nonce, OverSizedKey),
         false
     catch
-        error:badarg -> true
+        error:bad_key_size -> true
     end
   end).
 

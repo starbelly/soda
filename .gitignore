@@ -14,3 +14,6 @@ rebar3
 
 # Ignore beam files
 *.beam
+
+# Plugin artifact
+/test/.rebar3/erlcinfo
