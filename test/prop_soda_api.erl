@@ -188,9 +188,8 @@ prop_aead_xchacha20poly1305_ietf_key_size_fail() ->
   end).
 
 prop_sign_detached() ->
-    ?FORALL({Msg, KeyPair},
-        {non_empty(binary()),
-         binary()},
+    ?FORALL({Msg},
+        {non_empty(binary())},
         begin 
             {Pk, Sk} = soda_api:sign_keypair(),
             case soda_api:sign_detached(Msg, Sk) of 
@@ -199,7 +198,17 @@ prop_sign_detached() ->
             end
         end).
 
-
+prop_sign_verify_detached() ->
+    ?FORALL({Msg},
+        {non_empty(binary())},
+        begin 
+            {Pk, Sk} = soda_api:sign_keypair(),
+            S = soda_api:sign_detached(Msg, Sk),
+            case soda_api:sign_verify_detached(S, Msg,  Pk) of
+                {ok, _} -> true;
+                _ -> false
+            end
+        end).
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
