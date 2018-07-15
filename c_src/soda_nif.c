@@ -212,6 +212,7 @@ enif_crypto_pwhash_str_verify(ErlNifEnv * env, int argc,
   return retVal;
 }
 
+/* WIP */
 static
 ERL_NIF_TERM enif_crypto_sign_keypair(ErlNifEnv * env, int argc,
               ERL_NIF_TERM const UNUSED(argv[]))
@@ -235,6 +236,7 @@ ERL_NIF_TERM enif_crypto_sign_keypair(ErlNifEnv * env, int argc,
   return MK_TUPLE(env, MK_BIN(env, &pk), MK_BIN(env, &sk));
 }
 
+/* WIP */
 static
 ERL_NIF_TERM enif_crypto_sign_detached(ErlNifEnv * env, int argc,
                ERL_NIF_TERM const argv[])
@@ -263,6 +265,7 @@ ERL_NIF_TERM enif_crypto_sign_detached(ErlNifEnv * env, int argc,
   return MK_BIN(env, &sig);
 }
 
+/* WIP */
 static
 ERL_NIF_TERM enif_crypto_sign_verify_detached(ErlNifEnv * env, int argc,
                 ERL_NIF_TERM const argv[])
