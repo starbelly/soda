@@ -29,6 +29,7 @@
 
 #define MK_ATOM(env, str) enif_make_atom(env, str)
 #define MK_BIN(env, bin) enif_make_binary(env, bin)
+#define MK_TUPLE(env, ret1, ret2) enif_make_tuple2(env, ret1, ret2)
 #define BADARG(env) enif_make_badarg(env)
 #define GET_BIN(env, term, bin) enif_inspect_binary(env, term, bin)
 #define MK_UINT(env, val, size) enif_get_uint(env, val, size)
@@ -231,7 +232,7 @@ ERL_NIF_TERM enif_crypto_sign_keypair(ErlNifEnv * env, int argc,
 
   crypto_sign_keypair(pk.data, sk.data);
 
-  return enif_make_tuple2(env, MK_BIN(env, &pk), MK_BIN(env, &sk));
+  return MK_TUPLE(env, MK_BIN(env, &pk), MK_BIN(env, &sk));
 }
 
 static
@@ -243,7 +244,7 @@ ERL_NIF_TERM enif_crypto_sign_detached(ErlNifEnv * env, int argc,
 
   if ((2 != argc)
       || (!GET_BIN(env, argv[0], &m))
-      || (!enif_inspect_binary(env, argv[1], &sk)))
+      || (!GET_BIN(env, argv[1], &sk)))
   {
     return BADARG(env);
   }
