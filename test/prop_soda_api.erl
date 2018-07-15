@@ -187,6 +187,19 @@ prop_aead_xchacha20poly1305_ietf_key_size_fail() ->
     end
   end).
 
+prop_sign_detached() ->
+    ?FORALL({Msg, KeyPair},
+        {non_empty(binary()),
+         binary()},
+        begin 
+            {Pk, Sk} = soda_api:sign_keypair(),
+            case soda_api:sign_detached(Msg, Sk) of 
+                B when is_binary(B) -> true;
+                _ -> false
+            end
+        end).
+
+
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
