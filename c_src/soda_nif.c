@@ -174,7 +174,12 @@ enif_crypto_pwhash_str(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
 
   FREE(passwd);
 
-  return res != 0 ? OOM_ERROR(env) : OK_TUPLE(env, MK_BIN(env, &h));
+  if (res !=0 ) { 
+    FREE_BIN(&h);
+    return OOM_ERROR(env);
+  } else { 
+    return OK_TUPLE(env, MK_BIN(env, &h));
+  }
 }
 
 static ERL_NIF_TERM
@@ -344,6 +349,7 @@ enif_crypto_aead_xchacha20poly1305_ietf_encrypt(
         , nonce.data
         , key.data))
   {
+    FREE_BIN(&ct);
     return ENCRYPT_FAILED_ERROR(env);
   }
 
@@ -393,6 +399,7 @@ enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv * env, int argc,
       , nonce.data
       , key.data))
   {
+    FREE_BIN(&msg);
     return DECRYPT_FAILED_ERROR(env);
   }
 
