@@ -320,12 +320,12 @@ enif_crypto_aead_xchacha20poly1305_ietf_encrypt(
 
   if (key.size != crypto_aead_xchacha20poly1305_ietf_KEYBYTES) 
   { 
-    RAISE(env, ATOM_BAD_KEY_SIZE);
+    return RAISE(env, ATOM_BAD_KEY_SIZE);
   }
 
   if (nonce.size != crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
   {
-    RAISE(env, ATOM_BAD_NONCE_SIZE);
+    return RAISE(env, ATOM_BAD_NONCE_SIZE);
   }
 
   if (!ALLOC_BIN(msg.size + crypto_aead_xchacha20poly1305_ietf_ABYTES, &ct)) {
@@ -368,12 +368,12 @@ enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv * env, int argc,
   
   if (key.size != crypto_aead_xchacha20poly1305_ietf_KEYBYTES) 
   { 
-    RAISE(env, ATOM_BAD_KEY_SIZE);
+    return RAISE(env, ATOM_BAD_KEY_SIZE);
   }
 
   if (nonce.size != crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
   {
-    RAISE(env, ATOM_BAD_NONCE_SIZE);
+    return RAISE(env, ATOM_BAD_NONCE_SIZE);
   }
 
   if (!ALLOC_BIN(ct.size - crypto_aead_xchacha20poly1305_ietf_ABYTES, &msg))
