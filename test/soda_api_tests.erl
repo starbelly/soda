@@ -18,7 +18,7 @@ pwhash_str_verify_test() ->
     {ok, HashStr} = soda_api:pwhash_str(<<"thuper thecret">>),
     soda_api:pwhash_str_verify(HashStr, <<"thuper thecret">>).
 
-prop_randombytes_test() ->
+randombytes_test() ->
     is_binary(soda_api:randombytes(16)).
 
 randombytes_neg_int_fail_test() ->
@@ -33,5 +33,4 @@ randombytes_neg_int_fail_test() ->
 sign_keypair_test() ->
     { _, _ } = soda_api:sign_keypair(),
     true.
-
 
