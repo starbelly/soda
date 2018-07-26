@@ -47,14 +47,15 @@ nonce(NonceType) when is_atom(NonceType) ->
         Size -> soda_api:randombytes(Size)
     end.
 
+-spec password_hash(binary()) -> {ok, binary()} | {error, term()}.
+password_hash(Str) ->
+    soda_api:pwhash_str(Str).
+
+-spec password_verify(binary(), binary()) -> boolean().
+password_verify(HashStr, Str) ->
+    soda_api:pwhash_str_verify(HashStr, Str).
+
 -spec rand(non_neg_integer()) -> binary().
 rand(N) when N >= 0 ->
     soda_api:randombytes(N).
 
--spec password_hash(binary()) -> binary().
-password_hash(Str) ->
-    soda_api:pwhash_str(Str).
-
--spec password_verify(binary(), binary()) -> binary().
-password_verify(HashStr, Str) ->
-    soda_api:pwhash_str_verify(HashStr, Str).
