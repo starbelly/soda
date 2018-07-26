@@ -1,7 +1,11 @@
 # Ignore build artificacts, deps, doc, and crash dumps
 /_build/
 /deps/
-/doc/
+/doc/*.css
+/doc/*.html
+/doc/erlang.png
+/doc/edoc-info
+
 erl_crash.dump
 *.crashdump
 

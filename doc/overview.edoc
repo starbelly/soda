@@ -1,0 +1,22 @@
+	-*- html -*-
+
+	Soda overview page
+
+
+@author Bryan Paxton <starbelly@poboox.com>
+@copyright 2018 Bryan Paxton
+@version {@version}
+@title Soda
+
+@doc Soda is sweet
+
+== Contents ==
+
+<ol>
+  <li>{@section Introduction}</li>
+</ol>
+
+== Introduction ==
+
+== Acknowledgements ==
+
