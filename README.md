@@ -3,10 +3,6 @@
 
 Libsodium bindings for Erlang
 
-## Stability
- The code behind Soda is stable, the API will not be considered stable until 1.0
- and is very much subject to change until such time. Patience Daniel-san. 
-
 ## About
 
 Soda provides Erlang bindings to the Sodium Crypto Library ([libsodium](https://download.libsodium.org/doc/)).
