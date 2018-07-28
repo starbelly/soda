@@ -36,14 +36,14 @@ true
 ### Rebar3
 
 ```erlang
-{deps, [{soda, "0.1.0"}]}
+{deps, [{soda, "1.0.1"}]}
 ```
 
 ### Mix
 
 ```elixir
 def deps do
-  [{:soda, "~> 0.1.0"}]
+  [{:soda, "~> 1.0.1"}]
 end
 ```
 
