@@ -8,7 +8,7 @@
 @version {@version}
 @title Soda
 
-@doc Soda is sweet
+@doc Soda - Libsodum bindings for Erlang 
 
 == Contents ==
 

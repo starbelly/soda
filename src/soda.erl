@@ -41,7 +41,7 @@ aead_encrypt(Msg, Ad) when is_binary(Msg) andalso is_binary(Ad) ->
     C = soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, N, K),
     {ok, C, N, K}.
 
-%% @doc aead_encrypt/4 encrypt a message with additional data 
+%% @doc aead_decrypt/4 decrypt a message with non-confidental additional data 
 %% The aead_decrypt/4 function returns a decrypted message using the supplied
 %% cipher text, non-confidential Addition Data, Nonce, and Key. 
 %% @end
