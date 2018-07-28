@@ -41,7 +41,8 @@
 %% and at most `crypto_pwhash_BYTES_MAX'.
 %% @end
 -spec pwhash(binary(), binary()) -> {ok, binary()} | {error, term()}.
-pwhash(Passwd, Salt) ->
+pwhash(Passwd, Salt) when is_binary(Passwd) 
+                          andalso is_binary(Salt) ->
     crypto_pwhash(Passwd, Salt).
 
 %% @doc pwhash_str/1 hash a password for storage
@@ -54,7 +55,7 @@ pwhash(Passwd, Salt) ->
 %%% hash is stored in the returned binary. 
 %% @end
 -spec pwhash_str(binary()) -> {ok, binary()} | {error, term()}.
-pwhash_str(Passwd) ->
+pwhash_str(Passwd) when is_binary(Passwd) ->
     case crypto_pwhash_str(Passwd) of
         {ok, Str} ->
             [X, _] =  binary:split(Str, <<0>>),
@@ -68,14 +69,15 @@ pwhash_str(Passwd) ->
 %% supplied `HashStr. `Passwd' should be at least `crypto_pwhash_PASSWD_MIN'
 %% @end
 -spec pwhash_str_verify(binary(), iodata()) -> boolean().
-pwhash_str_verify(HashStr, Password) ->
-    crypto_pwhash_str_verify(HashStr, Password).
+pwhash_str_verify(HashStr, Passwd) when is_binary(HashStr) 
+                                        andalso is_binary(Passwd) ->
+    crypto_pwhash_str_verify(HashStr, Passwd).
 
 %% @doc randombytes/1 generate random data
 %% Creates and returns a binary with a size of `N' filled with an unpredictable sequence of bytes.
 %% @end
 -spec randombytes(non_neg_integer()) -> binary().
-randombytes(N) when N >= 0 ->
+randombytes(N) when is_integer(N) andalso N >= 0 ->
     crypto_randombytes(N).
 
 %% @doc sign_keypair/0 Create key pair suitable for public signatures. 
@@ -93,10 +95,11 @@ sign_keypair() ->
 %%% @end
 -spec sign_detached(M, Sk) -> {ok, Ds} | {error, failed_verification}
     when
-      M  :: iodata(),
+      M  :: binary(),
       Sk :: binary(),
       Ds :: binary().
-sign_detached(M, Sk) ->
+sign_detached(M, Sk) when is_binary(M) 
+                          andalso is_binary(Sk) ->
     crypto_sign_detached(M, Sk).
 
 %%% @doc sign_verify_detached/3 validate a signature.
@@ -106,9 +109,11 @@ sign_detached(M, Sk) ->
 -spec sign_verify_detached(Sig, M, Pk) -> {ok, M} | {error, failed_verification}
     when
       Sig :: binary(),
-      M   :: iodata(),
+      M   :: binary(),
       Pk  :: binary().
-sign_verify_detached(Sig, M, Pk) ->
+sign_verify_detached(Sig, M, Pk) when is_binary(Sig)
+                                      andalso is_binary(M)
+                                      andalso is_binary(Pk) ->
     case crypto_sign_verify_detached(Sig, M, Pk) of
         true -> {ok, M};
         false -> {error, failed_verification}

@@ -69,19 +69,20 @@ nonce(NonceType) when is_atom(NonceType) ->
 %% binary. 
 %% @end
 -spec password_hash(binary()) -> {ok, binary()} | {error, term()}.
-password_hash(Str) ->
+password_hash(Str) when is_binary(Str) ->
     soda_api:pwhash_str(Str).
 
 %% @doc 
 %% Verifies a password against a hashed password as created by `password_hash/1'
 %% @end
 -spec password_verify(binary(), binary()) -> boolean().
-password_verify(HashStr, Str) ->
+password_verify(HashStr, Str) when is_binary(HashStr) 
+                                   andalso is_binary(Str) ->
     soda_api:pwhash_str_verify(HashStr, Str).
 
 %% @doc
 %% Generate a binary consisting a sequence of `N' unpredictable random bytes.
 %% @end
 -spec rand(non_neg_integer()) -> binary().
-rand(N) when N >= 0 ->
+rand(N) when is_integer(N) andalso N >= 0 ->
     soda_api:randombytes(N).
