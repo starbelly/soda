@@ -20,8 +20,6 @@
          }
        ).
 
-to_bin(List) -> erlang:list_to_binary(List).
-
 %% @doc aead_encrypt/0 encrypt a message with additional data 
 %% The aead_encrypt/2 function returns an encrypted binary created from the
 %% message `Msg'  and non-confidential additional data `Ad'. 
@@ -29,12 +27,6 @@ to_bin(List) -> erlang:list_to_binary(List).
 %% Returns the ciphered text, 192 bit nonce and a secret key. 
 %% @end
 -spec aead_encrypt(binary(), binary()) -> {ok, binary(), binary(), binary()}.
-aead_encrypt(Msg, Ad) when is_list(Msg) andalso is_list(Ad) ->
-     aead_encrypt(to_bin(Msg), to_bin(Ad));
-aead_encrypt(Msg, Ad) when is_binary(Msg) andalso is_list(Ad) ->
-    aead_encrypt(Msg, to_bin(Ad));
-aead_encrypt(Msg, Ad) when is_list(Msg) andalso is_binary(Ad) ->
-    aead_encrypt(to_bin(Msg), Ad);
 aead_encrypt(Msg, Ad) when is_binary(Msg) andalso is_binary(Ad) ->
     N = soda:nonce(aead_xchacha20poly1305_ietf),
     K = soda_api:aead_xchacha20poly1305_ietf_keygen(),
