@@ -1,0 +1,102 @@
+iframe {
+  margin-top: 20px;
+  margin-bottom: 30px;
+
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+
+  -moz-box-shadow: 4px 4px 14px #000;
+  -webkit-box-shadow: 4px 4px 14px #000;
+  box-shadow: 4px 4px 14px #000;
+
+  -moz-transform:rotate(20deg);
+  -webkit-transform:rotate(20deg);
+  -o-transform:rotate(20deg);
+  -ms-transform:rotate(20deg);
+  filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=.2);
+} 
+
+body {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    margin-left: 1.5em;
+    margin-right: 1.2em;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+    color: #000000;
+    background-color: #ffffff;
+}
+
+a {
+    color: #b22222;
+}
+
+a.module, a.package {
+    text-decoration: none;
+}
+
+a.module:hover, a.package:hover {
+    background-color: #eeeeee;
+}
+
+a.module:active, a.package:active {
+    color: purple;
+}
+
+.navbar a {
+    color: white;
+}
+
+h2 a, h3 a, h4 a {
+    color: black;
+}
+
+/* Header styles */
+
+h1, h2 {
+    margin-left: -0.2in;
+}
+
+h2.indextitle {
+    padding: 0.4em;
+    background-color: #b22222;
+    color: white;
+}
+
+h3.function, h3.typedecl {
+    background-color: #eeeeee;
+    padding-left: 1em;
+}
+
+div.navbar {
+    background-color: #b22222;
+    padding: 0.2em;
+    color: white;
+}
+
+div.spec {
+    margin-left: 2em;
+    background-color: #ffffff;
+}
+
+ul.definitions {
+    list-style-type: none;
+}
+
+ul.index {
+    list-style-type: none;
+    background-color: #eeeeee;
+}
+
+ul {
+    list-style-type: square;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 3
+}
+
