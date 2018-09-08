@@ -1,7 +1,8 @@
 %%% @author Bryan Paxton <starbelly@pobox.com>
 %%% @doc soda module is the default interface which intends to provide 
-%%% a simple and inuitive interface to soda_api. For advanced usage 
-%%% please refer to soda_api.
+%%% a simple and inuitive interface to soda_api, which in turn provides a
+%%% lower level interface to libsodium. 
+%%% For advanced usage please refer to soda_api.
 %%% @end.
 -module(soda).
 
