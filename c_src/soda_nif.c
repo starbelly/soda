@@ -94,7 +94,6 @@ enif_crypto_randombytes(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
   }
 
   if (1 != ALLOC_BIN(size, &result)) {
-    FREE_BIN(&result);
     return OOM_ERROR(env);
   }
 
@@ -125,7 +124,6 @@ enif_crypto_pwhash(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
   }
 
   if (!ALLOC_BIN(crypto_box_SEEDBYTES, &h)) {
-    FREE_BIN(&h);
     return OOM_ERROR(env);
   }
 
@@ -162,7 +160,6 @@ enif_crypto_pwhash_str(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
   }
 
   if (!ALLOC_BIN(crypto_pwhash_STRBYTES, &h)) {
-    FREE_BIN(&h);
     return OOM_ERROR(env);
   }
 
@@ -226,8 +223,6 @@ ERL_NIF_TERM enif_crypto_sign_keypair(ErlNifEnv * env, int argc,
   if (!ALLOC_BIN(crypto_sign_PUBLICKEYBYTES, &pk)
       || !ALLOC_BIN(crypto_sign_SECRETKEYBYTES, &sk))
   {
-    FREE_BIN(&pk);
-    FREE_BIN(&sk);
     return OOM_ERROR(env);
   }
 
@@ -256,7 +251,6 @@ ERL_NIF_TERM enif_crypto_sign_detached(ErlNifEnv * env, int argc,
   }
 
   if (!ALLOC_BIN(crypto_sign_BYTES, &sig)) {
-    FREE_BIN(&sig);
     return OOM_ERROR(env);
   }
 
@@ -304,7 +298,6 @@ enif_crypto_aead_xchacha20poly1305_ietf_keygen(
   }
 
   if (!ALLOC_BIN(crypto_aead_xchacha20poly1305_ietf_KEYBYTES, &key)) { 
-    FREE_BIN(&key);
     return OOM_ERROR(env);  
   }
 
@@ -338,7 +331,6 @@ enif_crypto_aead_xchacha20poly1305_ietf_encrypt(
   }
 
   if (!ALLOC_BIN(msg.size + crypto_aead_xchacha20poly1305_ietf_ABYTES, &ct)) {
-    FREE_BIN(&ct);
     return OOM_ERROR(env);
   }
 
@@ -388,7 +380,6 @@ enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv * env, int argc,
 
   if (!ALLOC_BIN(ct.size - crypto_aead_xchacha20poly1305_ietf_ABYTES, &msg))
   {
-    FREE_BIN(&msg);
     return OOM_ERROR(env);
   }
 

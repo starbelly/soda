@@ -6,6 +6,13 @@
 -define(AEAD_XCHACHA20POLY1305_IETF_ABYTES, 24).
 -define(AEAD_XCHACHA20POLY1305_IETF_MESSAGEBYTES_MAX, 24).
 
+% Version <= 0.1.0 had would segv on mac os (at least) given plain text as an
+% input for ciphered text due to calling enif_release_binary/1 when there was
+% nothing to free. Reported and test provided by @1ma 
+regession1_oom_failure() ->  
+    N = soda:nonce(aead_xchacha20poly1305_ietf),
+    K = soda:rand(32),
+    {error, out_of_memory} = soda_api:aead_xchacha20poly1305_ietf_decrypt(<<"Hello, Mike?">>, <<"Hello, Joe.">>, N, K).
 
 nonce_test() -> 
     Props = [
