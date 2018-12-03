@@ -11,18 +11,76 @@
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
 
+prop_generichash() ->
+    ?FORALL({Size, Msg, Key}, {range(32, 64), non_empty(binary(24)), binary(24)},
+            begin
+                {ok, Bin} = soda_api:generichash(Size, Msg, Key),
+                is_binary(Bin)
+            end).
+
+prop_generichash_init1() ->
+    ?FORALL({Size}, {range(32, 64)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size),
+                true = is_reference(Ref)
+            end).
+
+prop_generichash_init2() ->
+    ?FORALL({Size, Key}, {range(32, 64), non_empty(binary(24))},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                true = is_reference(Ref)
+            end).
+
+prop_generichash_update() ->
+    ?FORALL({Size, Key, Msg}, {range(32, 64), non_empty(binary(24)), binary(24)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                true = is_reference(Ref),
+                {ok, Ref2} = soda_api:generichash_update(Ref, Msg),
+                true = is_reference(Ref2)
+            end).
+
+prop_generichash_final1() ->
+    ?FORALL({Size, Msg1, Msg2}, {range(32, 64),
+                                      binary(24), binary(24)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size),
+                true = is_reference(Ref),
+                {ok, Ref2} = soda_api:generichash_update(Ref, Msg1),
+                true = is_reference(Ref2),
+                {ok, Ref3} = soda_api:generichash_update(Ref2, Msg2),
+                true = is_reference(Ref3),
+                {ok, Hash} = soda_api:generichash_final(Size, Ref3),
+                true = is_binary(Hash)
+            end).
+
+prop_generichash_fina2() ->
+    ?FORALL({Size, Key, Msg1, Msg2}, {range(32, 64), non_empty(binary(32)),
+                                      binary(24), binary(24)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                true = is_reference(Ref),
+                {ok, Ref2} = soda_api:generichash_update(Ref, Msg1),
+                true = is_reference(Ref2),
+                {ok, Ref3} = soda_api:generichash_update(Ref2, Msg2),
+                true = is_reference(Ref3),
+                {ok, Hash} = soda_api:generichash_final(Size, Ref3),
+                true = is_binary(Hash)
+            end).
+
 prop_pwhash() ->
     ?FORALL({Passwd, Salt}, {non_empty(binary()), binary(16)},
             begin
                 {ok, Bin} = soda_api:pwhash(Passwd, Salt),
-                is_binary(Bin)
+                true = is_binary(Bin)
             end).
 
 prop_pwhash_str() ->
     ?FORALL({Passwd}, {non_empty(binary())},
             begin
                 {ok, Str} = soda_api:pwhash_str(Passwd),
-                is_binary(Str)
+                true = is_binary(Str)
             end).
 
 prop_pwhash_str_verify() ->
@@ -51,13 +109,6 @@ prop_randombytes_neg_int_fail() ->
         error:function_clause -> true
     end    
   end).
-
-prop_sign_keypair() ->
-    ?FORALL({}, {},
-      begin
-        { _, _ } = soda_api:sign_keypair(),
-        true
-      end).
 
 
 %% AEAD XChaCha20Poly1305
@@ -187,11 +238,50 @@ prop_aead_xchacha20poly1305_ietf_key_size_fail() ->
     end
   end).
 
+prop_sign_keypair() ->
+    ?FORALL({}, {},
+      begin
+        {ok, _, _ } = soda_api:sign_keypair(),
+        true
+      end).
+
+prop_sign_seed_keypair() ->
+    ?FORALL({Seed}, {binary()},
+      begin
+        {ok, _, _ } = soda_api:sign_seed_keypair(Seed),
+        true
+      end).
+
+
+prop_sign() ->
+    ?FORALL({Msg},
+        {binary()},
+        begin 
+            {ok, _Pk, Sk} = soda_api:sign_keypair(),
+            case soda_api:sign(Msg, Sk) of 
+                B when is_binary(B) -> true;
+                _ -> false
+            end
+        end).
+
+prop_sign_open() ->
+    ?FORALL({Msg},
+        {non_empty(binary())},
+        begin 
+            {ok, Pk, Sk} = soda_api:sign_keypair(),
+            S = soda_api:sign(Msg, Sk),
+            case soda_api:sign_open(S, Pk) of
+                {ok, _} -> true;
+                {error, _} -> false
+            end
+        end).
+
+
 prop_sign_detached() ->
     ?FORALL({Msg},
         {non_empty(binary())},
         begin 
-            {Pk, Sk} = soda_api:sign_keypair(),
+            {ok, _Pk, Sk} = soda_api:sign_keypair(),
             case soda_api:sign_detached(Msg, Sk) of 
                 B when is_binary(B) -> true;
                 _ -> false
@@ -202,13 +292,14 @@ prop_sign_verify_detached() ->
     ?FORALL({Msg},
         {non_empty(binary())},
         begin 
-            {Pk, Sk} = soda_api:sign_keypair(),
+            {ok, Pk, Sk} = soda_api:sign_keypair(),
             S = soda_api:sign_detached(Msg, Sk),
             case soda_api:sign_verify_detached(S, Msg,  Pk) of
                 {ok, _} -> true;
                 _ -> false
             end
         end).
+
 
 %%%%%%%%%%%%%%%
 %%% Helpers %%%
