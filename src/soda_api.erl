@@ -8,6 +8,15 @@
 -define(APPNAME, soda).
 -define(LIBNAME, soda_nif).
 
+% Generic hashing
+-export([
+         generichash/3,
+         generichash_init/2,
+         generichash_update/2,
+         generichash_final/2
+
+]).
+
 % AEAD Constructions
 -export([
          aead_xchacha20poly1305_ietf_encrypt/4,
@@ -33,6 +42,36 @@
 -export([randombytes/1]).
 
 -on_load(init/0).
+
+
+%% @doc generichash/3 
+%% @end
+-spec generichash(integer(), binary(), binary()) -> {ok, binary()} | {error, term()}.
+generichash(Size, Msg, Key) when is_integer(Size) 
+                            andalso is_binary(Msg) 
+                            andalso is_binary(Key) ->
+    crypto_generichash(Size, Msg, Key).
+
+%% @doc generichash_init/3 
+%% @end
+-spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
+generichash_init(Size, Key) when is_integer(Size) 
+                        andalso is_binary(Key) ->
+    crypto_generichash_init(Size, Key).
+
+%% @doc generichash_update/3 
+%% @end
+-spec generichash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
+generichash_update(State, Msg) when is_reference(State)
+                                        andalso is_binary(Msg) ->
+    crypto_generichash_update(State, Msg).
+
+%% @doc generichash_final/2
+%% @end
+-spec generichash_final(integer(), reference()) -> {ok, binary()} | {error, term()}.
+generichash_final(Size, State) when is_integer(Size) andalso is_reference(State) ->
+    crypto_generichash_final(Size, State).
+
 
 %% @doc pwhash/2 key derivation
 %% The pwhash/2 function derives a key from a `Passwd' whose length is at least 
@@ -171,6 +210,18 @@ init() ->
 
 
 %%% NIF stubs
+crypto_generichash(_Size, _Msg, _Key)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_init(_Size, _Key)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_update(_State, _Msg)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_final(_Size, _State)
+    -> erlang:nif_error(nif_not_loaded).
+
 crypto_pwhash(_Password, _Salt)
     -> erlang:nif_error(nif_not_loaded).
 

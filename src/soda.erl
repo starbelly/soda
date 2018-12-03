@@ -10,7 +10,7 @@
 -export([nonce/1, rand/1]).
 
 % Password hashing
--export([password_hash/1, password_verify/2]).
+-export([hash/3, hash_init/2, hash_update/2, hash_final/2, password_hash/1, password_verify/2]).
 
 % AEAD
 -export([aead_encrypt/2, aead_decrypt/4]).
@@ -44,6 +44,28 @@ aead_decrypt(C, Ad, N, K)  when is_binary(C)  andalso is_binary(Ad) andalso
                                 is_binary(K)  andalso size(K) == 32 ->
     M = soda_api:aead_xchacha20poly1305_ietf_decrypt(C, Ad, N, K),
     {ok, M}.
+
+%% @doc hash/3
+%% @end
+hash(Msg, Key, Size) when is_binary(Msg)  ->
+    {ok, Hash} = soda_api:generichash(Size, Msg, Key),
+    {ok, Hash}.
+
+%% @doc hash_init/2
+%% @end
+hash_init(Key, Size) ->
+    {ok, State} = soda_api:generichash_init(Size, Key).
+
+%% @doc hash_update/2
+%% @end
+hash_update(State, Msg) when is_reference(State) 
+                        andalso is_binary(Msg) ->
+    soda_api:generichash_update(State, Msg).
+
+%% @doc hash_final/2
+%% @end
+hash_final(State, Size) when is_reference(State) ->
+    soda_api:generichash_final(Size, State).
 
 %% @doc nonce/1 generate a nonce for supported algorithms.
 %% The following nonce types are currently supported:

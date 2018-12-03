@@ -11,6 +11,43 @@
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
 
+prop_generichash() ->
+    ?FORALL({Size, Msg, Key}, {range(32, 64), non_empty(binary(24)), binary(24)},
+            begin
+                {ok, Bin} = soda_api:generichash(Size, Msg, Key),
+                is_binary(Bin)
+            end).
+
+prop_generichash_init() ->
+    ?FORALL({Size, Key}, {range(32, 64), non_empty(binary(24))},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                is_reference(Ref)
+            end).
+
+prop_generichash_update() ->
+    ?FORALL({Size, Key, Msg}, {range(32, 64), non_empty(binary(24)), binary(24)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                true = is_reference(Ref),
+                {ok, Ref2} = soda_api:generichash_update(Ref, Msg),
+                is_reference(Ref2)
+            end).
+
+prop_generichash_final() ->
+    ?FORALL({Size, Key, Msg1, Msg2}, {range(32, 64), non_empty(binary(32)),
+                                      binary(24), binary(24)},
+            begin
+                {ok, Ref} = soda_api:generichash_init(Size, Key),
+                true = is_reference(Ref),
+                {ok, Ref2} = soda_api:generichash_update(Ref, Msg1),
+                true = is_reference(Ref2),
+                {ok, Ref3} = soda_api:generichash_update(Ref2, Msg2),
+                true = is_reference(Ref3),
+                {ok, Hash} = soda_api:generichash_final(Size, Ref3),
+                is_binary(Hash)
+            end).
+
 prop_pwhash() ->
     ?FORALL({Passwd, Salt}, {non_empty(binary()), binary(16)},
             begin
@@ -191,7 +228,7 @@ prop_sign_detached() ->
     ?FORALL({Msg},
         {non_empty(binary())},
         begin 
-            {Pk, Sk} = soda_api:sign_keypair(),
+            {_Pk, Sk} = soda_api:sign_keypair(),
             case soda_api:sign_detached(Msg, Sk) of 
                 B when is_binary(B) -> true;
                 _ -> false
