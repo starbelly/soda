@@ -8,6 +8,16 @@
 -define(APPNAME, soda).
 -define(LIBNAME, soda_nif).
 
+% Generic hashing
+-export([
+         generichash/3,
+         generichash_init/1,
+         generichash_init/2,
+         generichash_update/2,
+         generichash_final/2
+
+]).
+
 % AEAD Constructions
 -export([
          aead_xchacha20poly1305_ietf_encrypt/4,
@@ -25,6 +35,9 @@
 % Public Key Signatures
 -export([
          sign_keypair/0,
+         sign_seed_keypair/1,
+         sign/2,
+         sign_open/2,
          sign_detached/2,
          sign_verify_detached/3
 ]).
@@ -33,6 +46,43 @@
 -export([randombytes/1]).
 
 -on_load(init/0).
+
+
+%% @doc generichash/3 
+%% @end
+-spec generichash(integer(), binary(), binary()) -> {ok, binary()} | {error, term()}.
+generichash(Size, Msg, Key) when is_integer(Size) 
+                            andalso is_binary(Msg) 
+                            andalso is_binary(Key) ->
+    crypto_generichash(Size, Msg, Key).
+
+%% @doc generichash_init/1
+%% @end
+-spec generichash_init(integer()) -> {ok, reference()} | {error, term()}.
+generichash_init(Size) when is_integer(Size) ->
+    crypto_generichash_init(Size, <<"">>).
+
+%
+%% @doc generichash_init/2 
+%% @end
+-spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
+generichash_init(Size, Key) when is_integer(Size) 
+                        andalso is_binary(Key) ->
+    crypto_generichash_init(Size, Key).
+
+%% @doc generichash_update/2
+%% @end
+-spec generichash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
+generichash_update(State, Msg) when is_reference(State)
+                                        andalso is_binary(Msg) ->
+    crypto_generichash_update(State, Msg).
+
+%% @doc generichash_final/2
+%% @end
+-spec generichash_final(integer(), reference()) -> {ok, binary()} | {error, term()}.
+generichash_final(Size, State) when is_integer(Size) andalso is_reference(State) ->
+    crypto_generichash_final(Size, State).
+
 
 %% @doc pwhash/2 key derivation
 %% The pwhash/2 function derives a key from a `Passwd' whose length is at least 
@@ -89,6 +139,44 @@ randombytes(N) when is_integer(N) andalso N >= 0 ->
 sign_keypair() ->
     crypto_sign_keypair().
 
+%% @doc sign_seed_keypair/1 Create key pair suitable for public signatures. 
+%% The sign_keypair/1 function randomly generates a secret key with a size of
+%% `crypto_sign_SECRETKEYBYTES' bytes and a corresponding public key with a size
+%% of crypto_sign_PUBLICKEYBYTES
+%% @end
+-spec sign_seed_keypair(binary()) -> {binary(), binary()}.
+sign_seed_keypair(Seed) when is_binary(Seed) ->
+    crypto_sign_seed_keypair(Seed).
+
+%%% @doc sign/2 
+%%% The sign/2 function signs a the message`M' using
+%%% the secret key `Sk' that is a minimum of `crypto_sign_SECRETKEYBYTES' + `M'
+%%% length in bytes.
+%%% @end
+-spec sign(M, Sk) -> {ok, Ds} | {error, failed_verification}
+    when
+      M  :: binary(),
+      Sk :: binary(),
+      Ds :: binary().
+sign(M, Sk) when is_binary(M) 
+                          andalso is_binary(Sk) ->
+    crypto_sign(M, Sk).
+
+%%% @doc sign_open/2 
+%%% The sign/2 function signs a the message`M' using
+%%% the primary key `Pk' that is a minimum of `crypto_sign_SECRETKEYBYTES' + `M'
+%%% length in bytes.
+%%% @end
+-spec sign_open(Sm, Pk) -> {ok, Ds} | {error, failed_verification}
+    when
+      Sm ::  binary(),
+      Pk :: binary(),
+      Ds :: binary().
+sign_open(Sm, Pk) when is_binary(Sm) 
+                          andalso is_binary(Pk) ->
+    crypto_sign_open(Sm,  Pk).
+
+
 %%% @doc sign_detached/2 
 %%% The sign_detached/2 function signs a the message`M' using
 %%% the secret key `Sk' that is a minimum of `crypto_sign_SECRETKEYBYTES' bytes.
@@ -135,10 +223,11 @@ aead_xchacha20poly1305_ietf_keygen() ->
 -spec aead_xchacha20poly1305_ietf_encrypt(binary(), binary(), binary(),
                                           binary()) -> binary() | {error,
                                                                    term()}.
-aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key) when
-      is_bitstring(Message) andalso is_binary(AD) andalso is_binary(Nonce) andalso
-      is_binary(Key) ->
-    crypto_aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key).
+aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key) when is_bitstring(Msg)
+                                                         andalso is_binary(AD) 
+                                                         andalso is_binary(Nonce) 
+                                                         andalso  is_binary(Key) ->
+    crypto_aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key).
 
 -spec aead_xchacha20poly1305_ietf_decrypt(binary(), binary(), binary(),
                                           binary()) -> binary() | {error,
@@ -149,9 +238,10 @@ aead_xchacha20poly1305_ietf_encrypt(Message, AD, Nonce, Key) when
 %% `crypto_aead_xchacha20poly1305_ietf_ABYTES' bytes that is the MAC. Returns the decrypted
 %% message.
 %% @end
-aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when
-      is_binary(CT) andalso is_binary(AD) andalso is_binary(Nonce) andalso
-      is_binary(Key) ->
+aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when is_binary(CT) 
+                                                        andalso is_binary(AD) 
+                                                        andalso is_binary(Nonce) 
+                                                        andalso  is_binary(Key) ->
     crypto_aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key).
 
 %%% @private
@@ -171,6 +261,18 @@ init() ->
 
 
 %%% NIF stubs
+crypto_generichash(_Size, _Msg, _Key)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_init(_Size, _Key)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_update(_State, _Msg)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_generichash_final(_Size, _State)
+    -> erlang:nif_error(nif_not_loaded).
+
 crypto_pwhash(_Password, _Salt)
     -> erlang:nif_error(nif_not_loaded).
 
@@ -186,7 +288,16 @@ crypto_randombytes(_RequestedSize)
 crypto_sign_keypair()
     -> erlang:nif_error(nif_not_loaded).
 
-crypto_sign_detached(_Foo, _Bar)
+crypto_sign_seed_keypair(_Seed)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_sign(_Msg, _Sk)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_sign_open(_Signed, _Pk)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_sign_detached(_Msg, _Sk)
     -> erlang:nif_error(nif_not_loaded).
 
 crypto_sign_verify_detached(_Foo, _Bar, _Baz)
