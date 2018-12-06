@@ -11,6 +11,7 @@
 % Generic hashing
 -export([
          generichash/3,
+         generichash_init/1,
          generichash_init/2,
          generichash_update/2,
          generichash_final/2
@@ -52,14 +53,21 @@ generichash(Size, Msg, Key) when is_integer(Size)
                             andalso is_binary(Key) ->
     crypto_generichash(Size, Msg, Key).
 
-%% @doc generichash_init/3 
+%% @doc generichash_init/1
+%% @end
+-spec generichash_init(integer()) -> {ok, reference()} | {error, term()}.
+generichash_init(Size) when is_integer(Size) ->
+    crypto_generichash_init(Size, <<"">>).
+
+%
+%% @doc generichash_init/2 
 %% @end
 -spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
 generichash_init(Size, Key) when is_integer(Size) 
                         andalso is_binary(Key) ->
     crypto_generichash_init(Size, Key).
 
-%% @doc generichash_update/3 
+%% @doc generichash_update/2
 %% @end
 -spec generichash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
 generichash_update(State, Msg) when is_reference(State)

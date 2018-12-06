@@ -87,6 +87,25 @@ prop_hash_multi() ->
                 equals(Hash1, Hash2)
             end).
 
+prop_hash_multi_keylesss() ->
+    ?FORALL({Msg1, Msg2, Size1, Size2}, {non_empty(binary(32)),
+                                      non_empty(binary(24)), range(32, 64), range(32, 64)},
+            begin
+                {ok, Ref} = soda:hash_init(Size1),
+                true = is_reference(Ref),
+                {ok, _Ref} = soda:hash_update(Ref, Msg1),
+                {ok, _Ref} = soda:hash_update(Ref, Msg2),
+                {ok, Hash1} = soda:hash_final(Ref, Size2),
+                true = is_binary(Hash1),
+                {ok, Ref1} = soda:hash_init(Size1),
+                true = is_reference(Ref1),
+                {ok, _} = soda:hash_update(Ref1, Msg1),
+                {ok, _} = soda:hash_update(Ref1, Msg2),
+                {ok, Hash2} = soda:hash_final(Ref1, Size2),
+                true = is_binary(Hash2),
+                equals(Hash1, Hash2)
+            end).
+
 
 prop_password_hash() ->
     ?FORALL({Pass}, {non_empty(binary())},
