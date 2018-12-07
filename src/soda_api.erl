@@ -48,7 +48,7 @@
 -on_load(init/0).
 
 
-%% @doc generichash/3 
+%% @doc
 %% @end
 -spec generichash(integer(), binary(), binary()) -> {ok, binary()} | {error, term()}.
 generichash(Size, Msg, Key) when is_integer(Size) 
@@ -56,35 +56,34 @@ generichash(Size, Msg, Key) when is_integer(Size)
                             andalso is_binary(Key) ->
     crypto_generichash(Size, Msg, Key).
 
-%% @doc generichash_init/1
+%% @doc
 %% @end
 -spec generichash_init(integer()) -> {ok, reference()} | {error, term()}.
 generichash_init(Size) when is_integer(Size) ->
     crypto_generichash_init(Size, <<"">>).
 
-%
-%% @doc generichash_init/2 
+%% @doc
 %% @end
 -spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
 generichash_init(Size, Key) when is_integer(Size) 
                         andalso is_binary(Key) ->
     crypto_generichash_init(Size, Key).
 
-%% @doc generichash_update/2
+%% @doc
 %% @end
 -spec generichash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
 generichash_update(State, Msg) when is_reference(State)
                                         andalso is_binary(Msg) ->
     crypto_generichash_update(State, Msg).
 
-%% @doc generichash_final/2
+%% @doc
 %% @end
 -spec generichash_final(integer(), reference()) -> {ok, binary()} | {error, term()}.
 generichash_final(Size, State) when is_integer(Size) andalso is_reference(State) ->
     crypto_generichash_final(Size, State).
 
 
-%% @doc pwhash/2 key derivation
+%% @doc
 %% The pwhash/2 function derives a key from a `Passwd' whose length is at least 
 %% `pwhash_PASSWD_MIN' bytes and a `Salt' whose size is `crypto_pwhash_SALTBYTES' bytes. 
 %% Returns a binary with a minumum length of at least `crypto_pwhash_BYTES_MIN'
@@ -95,7 +94,7 @@ pwhash(Passwd, Salt) when is_binary(Passwd)
                           andalso is_binary(Salt) ->
     crypto_pwhash(Passwd, Salt).
 
-%% @doc pwhash_str/1 hash a password for storage
+%% @doc
 %%  The pwhash_str/1 function is used for generating hashed passwords that are
 %%  suitable for storage (e.g., RDBMS, Menesia, etc.) 
 %%% Specifically, the `Passwd' which shall have a minimum length of
@@ -114,7 +113,7 @@ pwhash_str(Passwd) when is_binary(Passwd) ->
             {error, Reason}
     end.
 
-%% @doc pwhash_str_verify/2 verify a hashed password
+%% @doc
 %% The pwhash_str_verify/2 function verifies the provided `Passwd' against a
 %% supplied `HashStr. `Passwd' should be at least `crypto_pwhash_PASSWD_MIN'
 %% @end
@@ -123,14 +122,14 @@ pwhash_str_verify(HashStr, Passwd) when is_binary(HashStr)
                                         andalso is_binary(Passwd) ->
     crypto_pwhash_str_verify(HashStr, Passwd).
 
-%% @doc randombytes/1 generate random data
+%% @doc
 %% Creates and returns a binary with a size of `N' filled with an unpredictable sequence of bytes.
 %% @end
 -spec randombytes(non_neg_integer()) -> binary().
 randombytes(N) when is_integer(N) andalso N >= 0 ->
     crypto_randombytes(N).
 
-%% @doc sign_keypair/0 Create key pair suitable for public signatures. 
+%% @doc
 %% The sign_keypair/0 function randomly generates a secret key with a size of
 %% `crypto_sign_SECRETKEYBYTES' bytes and a corresponding public key with a size
 %% of crypto_sign_PUBLICKEYBYTES
@@ -139,7 +138,7 @@ randombytes(N) when is_integer(N) andalso N >= 0 ->
 sign_keypair() ->
     crypto_sign_keypair().
 
-%% @doc sign_seed_keypair/1 Create key pair suitable for public signatures. 
+%% @doc
 %% The sign_keypair/1 function randomly generates a secret key with a size of
 %% `crypto_sign_SECRETKEYBYTES' bytes and a corresponding public key with a size
 %% of crypto_sign_PUBLICKEYBYTES
@@ -148,7 +147,7 @@ sign_keypair() ->
 sign_seed_keypair(Seed) when is_binary(Seed) ->
     crypto_sign_seed_keypair(Seed).
 
-%%% @doc sign/2 
+%%% @doc
 %%% The sign/2 function signs a the message`M' using
 %%% the secret key `Sk' that is a minimum of `crypto_sign_SECRETKEYBYTES' + `M'
 %%% length in bytes.
@@ -162,7 +161,7 @@ sign(M, Sk) when is_binary(M)
                           andalso is_binary(Sk) ->
     crypto_sign(M, Sk).
 
-%%% @doc sign_open/2 
+%%% @doc
 %%% The sign/2 function signs a the message`M' using
 %%% the primary key `Pk' that is a minimum of `crypto_sign_SECRETKEYBYTES' + `M'
 %%% length in bytes.
@@ -177,7 +176,7 @@ sign_open(Sm, Pk) when is_binary(Sm)
     crypto_sign_open(Sm,  Pk).
 
 
-%%% @doc sign_detached/2 
+%%% @doc
 %%% The sign_detached/2 function signs a the message`M' using
 %%% the secret key `Sk' that is a minimum of `crypto_sign_SECRETKEYBYTES' bytes.
 %%% @end
@@ -190,7 +189,7 @@ sign_detached(M, Sk) when is_binary(M)
                           andalso is_binary(Sk) ->
     crypto_sign_detached(M, Sk).
 
-%%% @doc sign_verify_detached/3 validate a signature.
+%%% @doc
 %%% The sign_verify_detached/3 function verifies the signature `Sig' is valid for a
 %%% the given message `M' using the public key `Pk'.
 %%% @end
@@ -208,7 +207,8 @@ sign_verify_detached(Sig, M, Pk) when is_binary(Sig)
     end.
 
 %% ----------------------
-%% @doc aead_xchacha20poly1305_ietf_keygen/0 generates a random key is
+%% @doc 
+%% aead_xchacha20poly1305_ietf_keygen/0 generates a random key is
 %% equivalent to calling `randombytes/1' with `aead_xchacha20poly1305_ietf_KEYBYTES'
 %% @end
 -spec aead_xchacha20poly1305_ietf_keygen() -> binary() | {error, term()}.
@@ -216,7 +216,8 @@ aead_xchacha20poly1305_ietf_keygen() ->
     crypto_aead_xchacha20poly1305_ietf_keygen().
 
 %% ----------------------
-%% @doc aead_xchacha20poly1305_ietf_encrypt/4 encrypts `Message' with additional data
+%% @doc 
+%% aead_xchacha20poly1305_ietf_encrypt/4 encrypts `Message' with additional data
 %% `AD' using `Key' and `Nonce'. Returns the encrypted message followed by
 %% `aead_chacha20poly1305_ietf_ABYTES/0' bytes of MAC.
 %% @end
@@ -233,7 +234,8 @@ aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key) when is_bitstring(Msg)
                                           binary()) -> binary() | {error,
                                                                    term()}.
 
-%% @doc aead_xchacha20poly1305_ietf_decrypt/4 decrypts ciphertext `CT' with additional
+%% @doc 
+%% aead_xchacha20poly1305_ietf_decrypt/4 decrypts ciphertext `CT' with additional
 %% data `AD' using `Key' and `Nonce'. Note: `CipherText' should contain
 %% `crypto_aead_xchacha20poly1305_ietf_ABYTES' bytes that is the MAC. Returns the decrypted
 %% message.

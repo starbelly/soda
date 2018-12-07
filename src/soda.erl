@@ -21,7 +21,7 @@
          }
        ).
 
-%% @doc aead_encrypt/0 encrypts a message with additional data 
+%% @doc
 %% The aead_encrypt/2 function returns an encrypted binary created from the
 %% message `Msg'  and non-confidential additional data `Ad'. 
 %% The additional data may be 0 byte if no additional data is required.
@@ -34,7 +34,7 @@ aead_encrypt(Msg, Ad) when is_binary(Msg) andalso is_binary(Ad) ->
     C = soda_api:aead_xchacha20poly1305_ietf_encrypt(Msg, Ad, N, K),
     {ok, C, N, K}.
 
-%% @doc aead_decrypt/4 decrypt a message with non-confidental additional data 
+%% @doc
 %% The aead_decrypt/4 function returns a decrypted message using the supplied
 %% cipher text, non-confidential Addition Data, Nonce, and Key. 
 %% @end
@@ -45,7 +45,7 @@ aead_decrypt(C, Ad, N, K)  when is_binary(C)  andalso is_binary(Ad) andalso
     M = soda_api:aead_xchacha20poly1305_ietf_decrypt(C, Ad, N, K),
     {ok, M}.
 
-%% @doc hash/3 compute a fixed-length finger print
+%% @doc
 %% The hash/3 function returns a computed fixed-length finger print (hash) 
 %% using the supplied message, key, and size. Size must be between 32 and 64. 
 %% @end
@@ -53,35 +53,35 @@ hash(Msg, Key, Size) when is_binary(Msg)  ->
     {ok, Hash} = soda_api:generichash(Size, Msg, Key),
     {ok, Hash}.
 
-%% @doc hash_init/1 initialize keyless state for a multi-part hash 
+%% @doc
 %% The hash_init/1 initializes state with no key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2
 %% @end
 hash_init(Size) ->
     soda_api:generichash_init(Size).
 
-%% @doc hash_init/2 initialize state for a multi-part hash
+%% @doc
 %% The hash_init/2 initializes state with the supplied key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2 
 %% @end
 hash_init(Key, Size) ->
     soda_api:generichash_init(Size, Key).
 
-%% @doc hash_update/2 updates state for a multi-part hash
+%% @doc
 %% The hash_update/2 updates the referenced state with the supplied message. 
 %% @end
 hash_update(State, Msg) when is_reference(State) 
                         andalso is_binary(Msg) ->
     soda_api:generichash_update(State, Msg).
 
-%% @doc hash_final/2 finalize a multi-part hash
+%% @doc
 %% The hash_final/2 functions returns a complete hash given a reference to a
 %% hash state and an output size.
 %% @end
 hash_final(State, Size) when is_reference(State) ->
     soda_api:generichash_final(Size, State).
 
-%% @doc nonce/1 generate a nonce for supported algorithms.
+%% @doc
 %% The following nonce types are currently supported:
 %%   `aead_xchacha20poly1305_ietf'
 %% @end
