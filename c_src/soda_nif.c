@@ -191,7 +191,11 @@ enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 		return ERROR(env, ATOM_BAD_HASH_SIZE);
 	}
 
-	if (NOT_IN_RANGE(k.size, gen_hash_KEYSIZE_MIN, gen_hash_KEYSIZE_MAX)) {
+	unsigned char *key = 0 == k.size ? NULL : k.data;
+
+	if (key
+	    && NOT_IN_RANGE(k.size, gen_hash_KEYSIZE_MIN,
+			    gen_hash_KEYSIZE_MAX)) {
 		return ERROR(env, ATOM_BAD_KEY_SIZE);
 	}
 
@@ -203,7 +207,7 @@ enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 		return OOM_ERROR(env);
 	}
 
-	if (0 != crypto_generichash_init(state, k.data, k.size, s)) {
+	if (0 != crypto_generichash_init(state, key, k.size, s)) {
 		FREE_RESOURCE(state);
 		return ENCRYPT_FAILED_ERROR(env);
 	}
@@ -231,10 +235,7 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 		return ENCRYPT_FAILED_ERROR(env);
 	}
 
-	ERL_NIF_TERM r = MK_RESOURCE(env, state);
-	FREE_RESOURCE(state);
-
-	return OK_TUPLE(env, r);
+	return MK_ATOM(env, ATOM_OK);
 }
 
 static ERL_NIF_TERM
@@ -267,10 +268,9 @@ enif_crypto_generichash_final(ErlNifEnv * env, int argc,
 		return ENCRYPT_FAILED_ERROR(env);
 	}
 
-	FREE_RESOURCE(&state);
-	FREE_RESOURCE(&safe);
-
 	ERL_NIF_TERM ret = enif_make_binary(env, &h);
+	FREE_RESOURCE(&safe);
+  FREE_RESOURCE(&state);
 	return OK_TUPLE(env, ret);
 }
 

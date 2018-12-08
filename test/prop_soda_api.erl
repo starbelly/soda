@@ -37,8 +37,8 @@ prop_generichash_update() ->
             begin
                 {ok, Ref} = soda_api:generichash_init(Size, Key),
                 true = is_reference(Ref),
-                {ok, Ref2} = soda_api:generichash_update(Ref, Msg),
-                true = is_reference(Ref2)
+                ok = soda_api:generichash_update(Ref, Msg),
+                true
             end).
 
 prop_generichash_final1() ->
@@ -47,25 +47,21 @@ prop_generichash_final1() ->
             begin
                 {ok, Ref} = soda_api:generichash_init(Size),
                 true = is_reference(Ref),
-                {ok, Ref2} = soda_api:generichash_update(Ref, Msg1),
-                true = is_reference(Ref2),
-                {ok, Ref3} = soda_api:generichash_update(Ref2, Msg2),
-                true = is_reference(Ref3),
-                {ok, Hash} = soda_api:generichash_final(Size, Ref3),
+                ok = soda_api:generichash_update(Ref, Msg1),
+                ok = soda_api:generichash_update(Ref, Msg2),
+                {ok, Hash} = soda_api:generichash_final(Size, Ref),
                 true = is_binary(Hash)
             end).
 
-prop_generichash_fina2() ->
+prop_generichash_final2() ->
     ?FORALL({Size, Key, Msg1, Msg2}, {range(32, 64), non_empty(binary(32)),
                                       binary(24), binary(24)},
             begin
                 {ok, Ref} = soda_api:generichash_init(Size, Key),
                 true = is_reference(Ref),
-                {ok, Ref2} = soda_api:generichash_update(Ref, Msg1),
-                true = is_reference(Ref2),
-                {ok, Ref3} = soda_api:generichash_update(Ref2, Msg2),
-                true = is_reference(Ref3),
-                {ok, Hash} = soda_api:generichash_final(Size, Ref3),
+                ok = soda_api:generichash_update(Ref, Msg1),
+                ok = soda_api:generichash_update(Ref, Msg2),
+                {ok, Hash} = soda_api:generichash_final(Size, Ref),
                 true = is_binary(Hash)
             end).
 

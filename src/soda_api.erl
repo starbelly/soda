@@ -64,21 +64,21 @@ generichash_init(Size) when is_integer(Size) ->
 
 %% @doc
 %% @end
--spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
+-spec generichash_init(integer(), binary()) -> {ok, boolean()} | {error, term()}.
 generichash_init(Size, Key) when is_integer(Size) 
                         andalso is_binary(Key) ->
     crypto_generichash_init(Size, Key).
 
 %% @doc
 %% @end
--spec generichash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
+-spec generichash_update(reference(), binary()) -> ok | {error, term()}.
 generichash_update(State, Msg) when is_reference(State)
                                         andalso is_binary(Msg) ->
     crypto_generichash_update(State, Msg).
 
 %% @doc
 %% @end
--spec generichash_final(integer(), reference()) -> {ok, binary()} | {error, term()}.
+-spec generichash_final(integer(), reference()) -> ok | {error, term()}.
 generichash_final(Size, State) when is_integer(Size) andalso is_reference(State) ->
     crypto_generichash_final(Size, State).
 

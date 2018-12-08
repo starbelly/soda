@@ -57,6 +57,7 @@ hash(Msg, Key, Size) when is_binary(Msg)  ->
 %% The hash_init/1 initializes state with no key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2
 %% @end
+-spec hash_init(integer()) -> {ok, reference()} | {error, term()}.
 hash_init(Size) ->
     soda_api:generichash_init(Size).
 
@@ -64,12 +65,14 @@ hash_init(Size) ->
 %% The hash_init/2 initializes state with the supplied key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2 
 %% @end
+-spec hash_init(binary(), integer()) -> {ok, reference()} | {error, term()}.
 hash_init(Key, Size) ->
     soda_api:generichash_init(Size, Key).
 
 %% @doc
 %% The hash_update/2 updates the referenced state with the supplied message. 
 %% @end
+-spec hash_update(reference(), binary()) -> ok | {error, term()}.
 hash_update(State, Msg) when is_reference(State) 
                         andalso is_binary(Msg) ->
     soda_api:generichash_update(State, Msg).
@@ -78,6 +81,7 @@ hash_update(State, Msg) when is_reference(State)
 %% The hash_final/2 functions returns a complete hash given a reference to a
 %% hash state and an output size.
 %% @end
+-spec hash_final(reference(), integer()) -> {ok, binary()} | {error, term()}.
 hash_final(State, Size) when is_reference(State) ->
     soda_api:generichash_final(Size, State).
 
