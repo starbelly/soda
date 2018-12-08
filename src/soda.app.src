@@ -1,15 +1,11 @@
-{application, soda,
- [{description, "libsodium bindings for Erlang"},
-  {vsn, "1.0.5"},
-  {registered, []},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
-  {maintainers, ["Bryan Paxton"]},
-  {licenses, ["MIT"]},
-  {links, [{"Github", "https://gitlab.com/starbelly/soda"}, 
-           {"Gitlab", "https://github.com/starbelly/soda"}]}
- ]}.
+{application,soda,
+             [{description,"libsodium bindings for Erlang"},
+              {vsn,"1.0.6"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[]},
+              {maintainers,["Bryan Paxton"]},
+              {licenses,["MIT"]},
+              {links,[{"Github","https://gitlab.com/starbelly/soda"},
+                      {"Gitlab","https://github.com/starbelly/soda"}]}]}.
