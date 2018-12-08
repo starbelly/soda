@@ -235,7 +235,7 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 		return ENCRYPT_FAILED_ERROR(env);
 	}
 
-	return MK_ATOM(env, ATOM_OK);
+	return OK_TUPLE(env, MK_ATOM(env, ATOM_TRUE));
 }
 
 static ERL_NIF_TERM

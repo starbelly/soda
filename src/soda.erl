@@ -72,7 +72,7 @@ hash_init(Key, Size) ->
 %% @doc
 %% The hash_update/2 updates the referenced state with the supplied message. 
 %% @end
--spec hash_update(reference(), binary()) -> ok | {error, term()}.
+-spec hash_update(reference(), binary()) -> {ok, boolean()} | {error, term()}.
 hash_update(State, Msg) when is_reference(State) 
                         andalso is_binary(Msg) ->
     soda_api:generichash_update(State, Msg).
