@@ -77,7 +77,7 @@ prop_hash_multi() ->
                 {ok, true} = soda:hash_update(Ref, Msg1),
                 {ok, true} = soda:hash_update(Ref, Msg2),
                 {ok, Hash1} = soda:hash_final(Ref, Size2),
-                {ok, true} = is_binary(Hash1),
+                true = is_binary(Hash1),
                 {ok, Ref1} = soda:hash_init(Key, Size1),
                 true = is_reference(Ref1),
                 {ok, true} = soda:hash_update(Ref1, Msg1),
