@@ -147,7 +147,11 @@ enif_crypto_generichash(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
 		return BADARG(env);
 	}
 
-	if (NOT_IN_RANGE(k.size, gen_hash_KEYSIZE_MIN, gen_hash_KEYSIZE_MAX)) {
+	unsigned char *key = 0 == k.size ? NULL : k.data;
+
+	if (key
+	    && NOT_IN_RANGE(k.size, gen_hash_KEYSIZE_MIN,
+			    gen_hash_KEYSIZE_MAX)) {
 		return ERROR(env, ATOM_BAD_KEY_SIZE);
 	}
 
