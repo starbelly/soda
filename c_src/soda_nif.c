@@ -251,7 +251,7 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 
 	memcpy(new_state->h, state->h, sizeof(*new_state));
 
-	if (0 != crypto_generichash_update(state, m.data, m.size)) {
+	if (0 != crypto_generichash_update(new_state, m.data, m.size)) {
 		return ENCRYPT_FAILED_ERROR(env);
 	}
 

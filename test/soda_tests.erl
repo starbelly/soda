@@ -14,6 +14,29 @@ regession1_oom_failure() ->
     K = soda:rand(32),
     {error, out_of_memory} = soda_api:aead_xchacha20poly1305_ietf_decrypt(<<"Hello, Mike?">>, <<"Hello, Joe.">>, N, K).
 
+
+hash_test() ->
+    Expected =
+    <<"d43cfb0b3c8bdfcce6a34fdc30378f660d39f459a4832170fd34f749d969d80c">>,
+    Key = <<"Nobody tosses a dwarf and foobar">>,
+    Msg = <<"There is plenty for the both of us, may the best Dwarf win.">>,
+    {ok, Hash} = soda_api:generichash(Msg, Key),
+    Hex = soda_api:bin2hex(Hash),
+    ?assertEqual(Expected, Hex).
+
+hash_multi_test() ->
+    Expected =
+    <<"d43cfb0b3c8bdfcce6a34fdc30378f660d39f459a4832170fd34f749d969d80c">>,
+    Key = <<"Nobody tosses a dwarf and foobar">>,
+    Msg1 = <<"There is plenty for the both of us, ">>,
+    Msg2 = <<"may the best Dwarf win.">>,
+    {ok, State} = soda:hash_init(Key),
+    {ok, State1} = soda:hash_update(State, Msg1),
+    {ok, State2} = soda:hash_update(State1, Msg2),
+    {ok, Hash} = soda:hash_final(State2),
+    Hex = soda_api:bin2hex(Hash),
+    ?assertEqual(Expected, Hex).
+
 nonce_test() -> 
     Props = [
          {aead_xchacha20poly1305_ietf, ?AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES}
