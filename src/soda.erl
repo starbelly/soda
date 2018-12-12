@@ -10,7 +10,7 @@
 -export([nonce/1, rand/1]).
 
 % Password hashing
--export([hash/3, hash_init/1, hash_init/2, hash_update/2, hash_final/2, password_hash/1, password_verify/2]).
+-export([hash/1, hash/2, hash_init/0, hash_init/1, hash_update/2, hash_final/1, password_hash/1, password_verify/2]).
 
 % AEAD
 -export([aead_encrypt/2, aead_decrypt/4]).
@@ -49,30 +49,36 @@ aead_decrypt(C, Ad, N, K)  when is_binary(C)  andalso is_binary(Ad) andalso
 %% The hash/3 function returns a computed fixed-length finger print (hash) 
 %% using the supplied message, key, and size. Size must be between 32 and 64. 
 %% @end
-hash(Msg, Key, Size) when is_binary(Msg)  ->
-    {ok, Hash} = soda_api:generichash(Size, Msg, Key),
-    {ok, Hash}.
+hash(Msg) when is_binary(Msg)  ->
+    soda_api:generichash(Msg).
+
+%% @doc
+%% The hash/3 function returns a computed fixed-length finger print (hash) 
+%% using the supplied message, key, and size. Size must be between 32 and 64. 
+%% @end
+hash(Msg, Key) when is_binary(Msg)  ->
+    soda_api:generichash(Msg, Key).
 
 %% @doc
 %% The hash_init/1 initializes state with no key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2
 %% @end
--spec hash_init(integer()) -> {ok, reference()} | {error, term()}.
-hash_init(Size) ->
-    soda_api:generichash_init(Size).
+-spec hash_init() -> {ok, reference()} | {error, term()}.
+hash_init() ->
+    soda_api:generichash_init().
 
 %% @doc
 %% The hash_init/2 initializes state with the supplied key for a multi-part hash
 %% operation. Updates to the state may be perfomed using returned reference and hash_update/2 
 %% @end
--spec hash_init(binary(), integer()) -> {ok, reference()} | {error, term()}.
-hash_init(Key, Size) ->
-    soda_api:generichash_init(Size, Key).
+-spec hash_init(binary()) -> {ok, reference()} | {error, term()}.
+hash_init(Key) when is_binary(Key) ->
+    soda_api:generichash_init(Key).
 
 %% @doc
 %% The hash_update/2 updates the referenced state with the supplied message. 
 %% @end
--spec hash_update(reference(), binary()) -> {ok, boolean()} | {error, term()}.
+-spec hash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
 hash_update(State, Msg) when is_reference(State) 
                         andalso is_binary(Msg) ->
     soda_api:generichash_update(State, Msg).
@@ -81,9 +87,9 @@ hash_update(State, Msg) when is_reference(State)
 %% The hash_final/2 functions returns a complete hash given a reference to a
 %% hash state and an output size.
 %% @end
--spec hash_final(reference(), integer()) -> {ok, binary()} | {error, term()}.
-hash_final(State, Size) when is_reference(State) ->
-    soda_api:generichash_final(Size, State).
+-spec hash_final(reference()) -> {ok, binary()} | {error, term()}.
+hash_final(State) when is_reference(State) ->
+    soda_api:generichash_final(State).
 
 %% @doc
 %% The following nonce types are currently supported:

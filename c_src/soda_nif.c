@@ -139,32 +139,24 @@ enif_crypto_randombytes(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
 static ERL_NIF_TERM
 enif_crypto_generichash(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
 {
-	unsigned int s;
 	ErlNifBinary h, m, k;
 
-	if ((3 != argc)
-	    || !IS_NUM(env, argv[0])
-	    || (!MK_UINT(env, argv[0], &s))
-	    || (!GET_BIN(env, argv[1], &m))
-	    || (!GET_BIN(env, argv[2], &k))) {
+	if ((2 != argc)
+	    || (!GET_BIN(env, argv[0], &m))
+	    || (!GET_BIN(env, argv[1], &k))) {
 		return BADARG(env);
-	}
-
-	if (NOT_IN_RANGE(s, gen_hash_SIZE_MIN, gen_hash_SIZE_MAX)) {
-		return ERROR(env, ATOM_BAD_HASH_SIZE);
 	}
 
 	if (NOT_IN_RANGE(k.size, gen_hash_KEYSIZE_MIN, gen_hash_KEYSIZE_MAX)) {
 		return ERROR(env, ATOM_BAD_KEY_SIZE);
 	}
 
-	if (!ALLOC_BIN(s, &h)) {
+	if (!ALLOC_BIN(crypto_generichash_BYTES, &h)) {
 		return OOM_ERROR(env);
 	}
 
 	if (0 !=
-	    crypto_generichash(h.data, h.size, m.data, m.size, k.data,
-			       k.size)) {
+	    crypto_generichash(h.data, h.size, m.data, m.size, k.data, k.size)) {
 		FREE_BIN(&h);
 		return ENCRYPT_FAILED_ERROR(env);
 	}
@@ -177,19 +169,13 @@ static ERL_NIF_TERM
 enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 			     ERL_NIF_TERM const argv[])
 {
-	unsigned int s;
 	ErlNifBinary k;
 
-	if ((2 != argc)
-	    || !IS_NUM(env, argv[0])
-	    || (!MK_UINT(env, argv[0], &s))
-	    || (!GET_BIN(env, argv[1], &k))) {
+	if ((1 != argc)
+	    || (!GET_BIN(env, argv[0], &k))) {
 		return BADARG(env);
 	}
 
-	if (NOT_IN_RANGE(s, gen_hash_SIZE_MIN, gen_hash_SIZE_MAX)) {
-		return ERROR(env, ATOM_BAD_HASH_SIZE);
-	}
 
 	unsigned char *key = 0 == k.size ? NULL : k.data;
 
@@ -207,7 +193,7 @@ enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 		return OOM_ERROR(env);
 	}
 
-	if (0 != crypto_generichash_init(state, key, k.size, s)) {
+	if (0 != crypto_generichash_init(state, key, k.size, crypto_generichash_BYTES)) {
 		FREE_RESOURCE(state);
 		return ENCRYPT_FAILED_ERROR(env);
 	}
@@ -231,33 +217,36 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 		return BADARG(env);
 	}
 
+  unsigned long b = crypto_generichash_statebytes();
+	crypto_generichash_state *new_state = (crypto_generichash_state *) ALLOC_RESOURCE(gen_hash_state_t, b);
+
+	memcpy(new_state->h, state->h, sizeof(*new_state));
+
+
 	if (0 != crypto_generichash_update(state, m.data, m.size)) {
 		return ENCRYPT_FAILED_ERROR(env);
 	}
 
-	return OK_TUPLE(env, MK_ATOM(env, ATOM_TRUE));
+	ERL_NIF_TERM r = MK_RESOURCE(env, new_state);
+	FREE_RESOURCE(new_state);
+
+
+	return OK_TUPLE(env, r);
 }
 
 static ERL_NIF_TERM
 enif_crypto_generichash_final(ErlNifEnv * env, int argc,
 			      ERL_NIF_TERM const argv[])
 {
-	unsigned int s;
 	ErlNifBinary h;
 	crypto_generichash_state *state;
 
-	if ((2 != argc)
-	    || !IS_NUM(env, argv[0])
-	    || (!MK_UINT(env, argv[0], &s))
-	    || (!GET_RESOURCE(env, argv[1], gen_hash_state_t, (void **)&state))) {
+	if ((1 != argc)
+	    || (!GET_RESOURCE(env, argv[0], gen_hash_state_t, (void **)&state))) {
 		return BADARG(env);
 	}
 
-	if (NOT_IN_RANGE(s, gen_hash_SIZE_MIN, gen_hash_SIZE_MAX)) {
-		return ERROR(env, ATOM_BAD_HASH_SIZE);
-	}
-
-	if (!ALLOC_BIN(s, &h)) {
+	if (!ALLOC_BIN(crypto_generichash_BYTES, &h)) {
 		return OOM_ERROR(env);
 	}
 
@@ -269,8 +258,6 @@ enif_crypto_generichash_final(ErlNifEnv * env, int argc,
 	}
 
 	ERL_NIF_TERM ret = enif_make_binary(env, &h);
-	FREE_RESOURCE(&safe);
-  FREE_RESOURCE(&state);
 	return OK_TUPLE(env, ret);
 }
 
@@ -608,16 +595,16 @@ enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv * env, int argc,
 
 static ErlNifFunc nif_funcs[] = {
 	{
-	 "crypto_generichash", 3, enif_crypto_generichash,
+	 "crypto_generichash", 2, enif_crypto_generichash,
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
-	 "crypto_generichash_init", 2, enif_crypto_generichash_init,
+	 "crypto_generichash_init", 1, enif_crypto_generichash_init,
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
 	 "crypto_generichash_update", 2, enif_crypto_generichash_update,
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
-	 "crypto_generichash_final", 2, enif_crypto_generichash_final,
+	 "crypto_generichash_final", 1, enif_crypto_generichash_final,
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
 	 "crypto_randombytes", 1,

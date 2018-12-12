@@ -10,11 +10,12 @@
 
 % Generic hashing
 -export([
-         generichash/3,
+         generichash/1,
+         generichash/2,
+         generichash_init/0,
          generichash_init/1,
-         generichash_init/2,
          generichash_update/2,
-         generichash_final/2
+         generichash_final/1
 
 ]).
 
@@ -50,24 +51,26 @@
 
 %% @doc
 %% @end
--spec generichash(integer(), binary(), binary()) -> {ok, binary()} | {error, term()}.
-generichash(Size, Msg, Key) when is_integer(Size) 
-                            andalso is_binary(Msg) 
+-spec generichash(binary()) -> {ok, binary()} | {error, term()}.
+generichash(Msg) when is_binary(Msg)  ->
+    crypto_generichash(Msg, <<"">>).
+
+-spec generichash(binary(), binary()) -> {ok, binary()} | {error, term()}.
+generichash(Msg, Key) when is_binary(Msg) 
                             andalso is_binary(Key) ->
-    crypto_generichash(Size, Msg, Key).
+    crypto_generichash(Msg, Key).
 
 %% @doc
 %% @end
--spec generichash_init(integer()) -> {ok, reference()} | {error, term()}.
-generichash_init(Size) when is_integer(Size) ->
-    crypto_generichash_init(Size, <<"">>).
+-spec generichash_init() -> {ok, reference()} | {error, term()}.
+generichash_init() ->
+    crypto_generichash_init(<<"">>).
 
 %% @doc
 %% @end
--spec generichash_init(integer(), binary()) -> {ok, reference()} | {error, term()}.
-generichash_init(Size, Key) when is_integer(Size) 
-                        andalso is_binary(Key) ->
-    crypto_generichash_init(Size, Key).
+-spec generichash_init(binary()) -> {ok, reference()} | {error, term()}.
+generichash_init(Key) when is_binary(Key) ->
+    crypto_generichash_init(Key).
 
 %% @doc
 %% @end
@@ -78,9 +81,9 @@ generichash_update(State, Msg) when is_reference(State)
 
 %% @doc
 %% @end
--spec generichash_final(integer(), reference()) -> {ok, binary()} | {error, term()}.
-generichash_final(Size, State) when is_integer(Size) andalso is_reference(State) ->
-    crypto_generichash_final(Size, State).
+-spec generichash_final(reference()) -> {ok, binary()} | {error, term()}.
+generichash_final(State) when  is_reference(State) ->
+    crypto_generichash_final(State).
 
 
 %% @doc
@@ -263,16 +266,16 @@ init() ->
 
 
 %%% NIF stubs
-crypto_generichash(_Size, _Msg, _Key)
+crypto_generichash(_Msg, _Key)
     -> erlang:nif_error(nif_not_loaded).
 
-crypto_generichash_init(_Size, _Key)
+crypto_generichash_init(_Key)
     -> erlang:nif_error(nif_not_loaded).
 
 crypto_generichash_update(_State, _Msg)
     -> erlang:nif_error(nif_not_loaded).
 
-crypto_generichash_final(_Size, _State)
+crypto_generichash_final(_State)
     -> erlang:nif_error(nif_not_loaded).
 
 crypto_pwhash(_Password, _Salt)

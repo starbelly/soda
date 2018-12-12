@@ -61,47 +61,46 @@ prop_aead() ->
             end).
 
 prop_hash() ->
-    ?FORALL({Msg, Key, Size}, {non_empty(binary(24)), non_empty(binary(24)),
-                               range(32, 64)},
+    ?FORALL({Msg, Key}, {non_empty(binary(24)), non_empty(binary(24))},
             begin
-                {ok, Bin} = soda:hash(Msg, Key, Size),
+                {ok, Bin} = soda:hash(Msg, Key),
                 true = is_binary(Bin)
             end).
 
 prop_hash_multi() ->
-    ?FORALL({Key, Msg1, Msg2, Size1, Size2}, {non_empty(binary(24)), non_empty(binary(32)),
-                                      non_empty(binary(24)), range(32, 64), range(32, 64)},
+    ?FORALL({Key, Msg1, Msg2}, {non_empty(binary(24)), non_empty(binary(32)),
+                                      non_empty(binary(24))},
             begin
-                {ok, Ref} = soda:hash_init(Key, Size1),
-                true = is_reference(Ref),
-                {ok, true} = soda:hash_update(Ref, Msg1),
-                {ok, true} = soda:hash_update(Ref, Msg2),
-                {ok, Hash1} = soda:hash_final(Ref, Size2),
+                {ok, State} = soda:hash_init(Key),
+                true = is_reference(State),
+                {ok, State1} = soda:hash_update(State, Msg1),
+                {ok, State2} = soda:hash_update(State1, Msg2),
+                {ok, Hash1} = soda:hash_final(State2),
                 true = is_binary(Hash1),
-                {ok, Ref1} = soda:hash_init(Key, Size1),
-                true = is_reference(Ref1),
-                {ok, true} = soda:hash_update(Ref1, Msg1),
-                {ok, true} = soda:hash_update(Ref1, Msg2),
-                {ok, Hash2} = soda:hash_final(Ref1, Size2),
+                {ok, State3} = soda:hash_init(Key),
+                true = is_reference(State3),
+                {ok, State4} = soda:hash_update(State3, Msg1),
+                {ok, State5} = soda:hash_update(State4, Msg2),
+                {ok, Hash2} = soda:hash_final(State5),
                 true = is_binary(Hash2),
                 equals(Hash1, Hash2)
             end).
 
 prop_hash_multi_keylesss() ->
-    ?FORALL({Msg1, Msg2, Size1, Size2}, {non_empty(binary(32)),
-                                      non_empty(binary(24)), range(32, 64), range(32, 64)},
+    ?FORALL({Msg1, Msg2}, {non_empty(binary(32)),
+                                      non_empty(binary(24))},
             begin
-                {ok, Ref} = soda:hash_init(Size1),
-                true = is_reference(Ref),
-                {ok, true} = soda:hash_update(Ref, Msg1),
-                {ok, true} = soda:hash_update(Ref, Msg2),
-                {ok, Hash1} = soda:hash_final(Ref, Size2),
+                {ok, State} = soda:hash_init(),
+                true = is_reference(State),
+                {ok, State1} = soda:hash_update(State, Msg1),
+                {ok, State2} = soda:hash_update(State1, Msg2),
+                {ok, Hash1} = soda:hash_final(State2),
                 true = is_binary(Hash1),
-                {ok, Ref1} = soda:hash_init(Size1),
-                true = is_reference(Ref1),
-                {ok, true} = soda:hash_update(Ref1, Msg1),
-                {ok, true} = soda:hash_update(Ref1, Msg2),
-                {ok, Hash2} = soda:hash_final(Ref1, Size2),
+                {ok, State3} = soda:hash_init(),
+                true = is_reference(State3),
+                {ok, State4} = soda:hash_update(State3, Msg1),
+                {ok, State5} = soda:hash_update(State4, Msg2),
+                {ok, Hash2} = soda:hash_final(State5),
                 true = is_binary(Hash2),
                 equals(Hash1, Hash2)
             end).
