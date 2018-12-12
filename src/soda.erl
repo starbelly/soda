@@ -46,37 +46,37 @@ aead_decrypt(C, Ad, N, K)  when is_binary(C)  andalso is_binary(Ad) andalso
     {ok, M}.
 
 %% @doc
-%% The hash/3 function returns a computed fixed-length finger print (hash) 
-%% using the supplied message, key, and size. Size must be between 32 and 64. 
+%% The hash/1 function returns a computed fixed-length finger print on the
+%% supplied message with a fixed output size of 64 bytes.
 %% @end
 hash(Msg) when is_binary(Msg)  ->
     soda_api:generichash(Msg).
 
 %% @doc
-%% The hash/3 function returns a computed fixed-length finger print (hash) 
-%% using the supplied message, key, and size. Size must be between 32 and 64. 
+%% Like hash/1 but also takes a key parameter of which key must be at least 32 bytes.
 %% @end
 hash(Msg, Key) when is_binary(Msg)  ->
     soda_api:generichash(Msg, Key).
 
 %% @doc
 %% The hash_init/1 initializes state with no key for a multi-part hash
-%% operation. Updates to the state may be perfomed using returned reference and hash_update/2
+%% operation. Updates to the state are perfomed using returned reference and hash_update/2
 %% @end
 -spec hash_init() -> {ok, reference()} | {error, term()}.
 hash_init() ->
     soda_api:generichash_init().
 
 %% @doc
-%% The hash_init/2 initializes state with the supplied key for a multi-part hash
-%% operation. Updates to the state may be perfomed using returned reference and hash_update/2 
+%% Like hash_init/1 but also takes a key parameter.
 %% @end
 -spec hash_init(binary()) -> {ok, reference()} | {error, term()}.
 hash_init(Key) when is_binary(Key) ->
     soda_api:generichash_init(Key).
 
 %% @doc
-%% The hash_update/2 updates the referenced state with the supplied message. 
+%% The hash_update/2 updates the referenced state with the supplied message.
+%% Returning new state which may be used to perform more updates or finalize the
+%% hash using hash_final/2.
 %% @end
 -spec hash_update(reference(), binary()) -> {ok, reference()} | {error, term()}.
 hash_update(State, Msg) when is_reference(State) 

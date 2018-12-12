@@ -156,7 +156,8 @@ enif_crypto_generichash(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
 	}
 
 	if (0 !=
-	    crypto_generichash(h.data, h.size, m.data, m.size, k.data, k.size)) {
+	    crypto_generichash(h.data, h.size, m.data, m.size, k.data,
+			       k.size)) {
 		FREE_BIN(&h);
 		return ENCRYPT_FAILED_ERROR(env);
 	}
@@ -176,7 +177,6 @@ enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 		return BADARG(env);
 	}
 
-
 	unsigned char *key = 0 == k.size ? NULL : k.data;
 
 	if (key
@@ -193,7 +193,9 @@ enif_crypto_generichash_init(ErlNifEnv * env, int argc,
 		return OOM_ERROR(env);
 	}
 
-	if (0 != crypto_generichash_init(state, key, k.size, crypto_generichash_BYTES)) {
+	if (0 !=
+	    crypto_generichash_init(state, key, k.size,
+				    crypto_generichash_BYTES)) {
 		FREE_RESOURCE(state);
 		return ENCRYPT_FAILED_ERROR(env);
 	}
@@ -217,11 +219,11 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 		return BADARG(env);
 	}
 
-  unsigned long b = crypto_generichash_statebytes();
-	crypto_generichash_state *new_state = (crypto_generichash_state *) ALLOC_RESOURCE(gen_hash_state_t, b);
+	unsigned long b = crypto_generichash_statebytes();
+	crypto_generichash_state *new_state =
+	    (crypto_generichash_state *) ALLOC_RESOURCE(gen_hash_state_t, b);
 
 	memcpy(new_state->h, state->h, sizeof(*new_state));
-
 
 	if (0 != crypto_generichash_update(state, m.data, m.size)) {
 		return ENCRYPT_FAILED_ERROR(env);
@@ -229,7 +231,6 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 
 	ERL_NIF_TERM r = MK_RESOURCE(env, new_state);
 	FREE_RESOURCE(new_state);
-
 
 	return OK_TUPLE(env, r);
 }
