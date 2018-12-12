@@ -11,6 +11,13 @@
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
 
+prop_bin2hex() ->
+    ?FORALL({Bin}, {binary()},
+            begin
+                Hex = soda_api:bin2hex(Bin),
+                is_binary(Hex)
+            end).
+
 prop_generichash() ->
     ?FORALL({Msg, Key}, {non_empty(binary(24)), binary(24)},
             begin

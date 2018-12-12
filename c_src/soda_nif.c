@@ -105,6 +105,28 @@ static void unload(ErlNifEnv * UNUSED(env), void *UNUSED(priv))
 }
 
 /* BEGIN */
+static ERL_NIF_TERM
+enif_sodium_bin2hex(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
+{
+	ErlNifBinary bin, hex;
+
+	if ((1 != argc)
+	    || (!GET_BIN(env, argv[0], &bin))) {
+		return BADARG(env);
+	}
+
+	if (!enif_alloc_binary((bin.size * 2) + 1, &hex)) {
+		return OOM_ERROR(env);
+	}
+
+	if (NULL ==
+	    sodium_bin2hex((char *)hex.data, (bin.size * 2) + 1, bin.data,
+			   bin.size)) {
+		return RAISE(env, ATOM_UNKNOWN);
+	}
+
+	return enif_make_binary(env, &hex);
+}
 
 static ERL_NIF_TERM
 enif_crypto_randombytes(ErlNifEnv * env, int argc, ERL_NIF_TERM const argv[])
@@ -599,6 +621,9 @@ enif_crypto_aead_xchacha20poly1305_ietf_decrypt(ErlNifEnv * env, int argc,
 }
 
 static ErlNifFunc nif_funcs[] = {
+	{
+	 "sodium_bin2hex", 1, enif_sodium_bin2hex,
+	 ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
 	 "crypto_generichash", 2, enif_crypto_generichash,
 	 ERL_NIF_DIRTY_JOB_CPU_BOUND},

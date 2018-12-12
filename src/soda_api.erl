@@ -26,6 +26,9 @@
          aead_xchacha20poly1305_ietf_keygen/0
 ]).
 
+% Utils
+-export([bin2hex/1]).
+
 % Password Hashing and Key Derivation
 -export([
          pwhash/2,
@@ -48,6 +51,9 @@
 
 -on_load(init/0).
 
+-spec bin2hex(binary()) -> binary().
+bin2hex(Bin) ->
+    hd(binary:split(sodium_bin2hex(Bin), <<0>>)).
 
 %% @doc
 %% @end
@@ -266,6 +272,9 @@ init() ->
 
 
 %%% NIF stubs
+sodium_bin2hex(_Bin)
+    -> erlang:nif_error(nif_not_loaded).
+
 crypto_generichash(_Msg, _Key)
     -> erlang:nif_error(nif_not_loaded).
 
