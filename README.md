@@ -36,14 +36,14 @@ true
 ### Rebar3
 
 ```erlang
-{deps, [{soda, "1.0.1"}]}
+{deps, [{soda, "1.1.1"}]}
 ```
 
 ### Mix
 
 ```elixir
 def deps do
-  [{:soda, "~> 1.0.1"}]
+  [{:soda, "~> 1.1"}]
 end
 ```
 
@@ -123,6 +123,67 @@ true
 ```erlang
 4> D = soda_api:aead_xchacha20poly1305_ietf_decrypt(C, <<"Hello, Joe.">>, N, K).
 <<"Hello, Mike?">>
+```
+
+#### Generic Hashing
+
+Note that a context is an 8 byte binary. 
+
+##### Single part
+
+Without a key
+
+```erlang
+1> {ok, Hash} = soda_api:generichash(<<"Every book is a children's book if the kid can read!">>).
+{ok,<<110,213,155,8,43,187,167,80,146,177,214,102,226,62,
+      107,0,197,188,250,227,26,127,216,211,82,111,20,...>>}
+```
+
+With a key
+
+```erlang
+  1> Key = soda_api:randombytes(16).
+  <<210,27,222,99,117,191,249,46,192,189,137,37,59,128,142,38>>
+  2> Data = <<"Every book is a children's book if the kid can read!">>.
+  <<"Every book is a children's book if the kid can read!">>
+  2> {ok, Hash} = soda_api:generichash(<<"Every book is a children's book if the kid can read!">>, Key).
+  {ok,<<46,245,69,115,197,167,214,2,175,251,181,113,130,
+      234,222,98,228,42,249,24,59,129,29,107,213,124,46,...>>}
+```  
+
+##### Multi-part 
+
+Without a key
+
+```erlang
+1> {ok, State} = soda:hash_init().
+{ok,#Ref<0.3118750307.3589668872.246381>}
+2> {ok, State1} = soda:hash_update(State,  <<"Any sufficiently complicated concurrent program in another language contains an ad hoc informally-specified ">>).
+{ok,#Ref<0.3118750307.3589668872.246382>}
+3> {ok, State2} = soda:hash_update(State1,  <<"bug-ridden slow implementation of half of Erlang.">>).
+{ok,#Ref<0.3118750307.3589668872.246383>}
+4> {ok, Hash} = soda:hash_final(State2).
+{ok,<<213,253,49,236,84,178,244,57,188,147,14,175,172,74,
+      105,61,99,4,143,138,246,208,235,82,205,74,211,...>>}
+5> Hex = soda_api:bin2hex(Hash).
+<<"d5fd31ec54b2f439bc930eafac4a693d63048f8af6d0eb52cd4ad353e90fbc01">>
+```
+
+
+With a key
+
+```erlang
+  1> {ok, State} = soda:hash_init(<<"Virding's first rule of programming">>).
+  {ok,#Ref<0.791790418.1979056136.39831>}
+  2> {ok, State1} = soda:hash_update(State,  <<"Any sufficiently complicated concurrent program in another language contains an ad hoc informally-specified ">>).
+  {ok,#Ref<0.791790418.1979056136.39832>}
+  3> {ok, State2} = soda:hash_update(State1,  <<"bug-ridden slow implementation of half of Erlang.">>).
+  {ok,#Ref<0.791790418.1979056136.39833>}
+  4> {ok, Hash} = soda:hash_final(State2).
+  {ok,<<103,191,97,168,121,250,16,57,59,220,113,55,230,119,
+      126,141,93,102,86,130,143,198,54,102,23,180,219,...>>}
+  5> Hex = soda_api:bin2hex(Hash).
+  <<"67bf61a879fa10393bdc7137e6777e8d5d6656828fc6366617b4db25e93bfe41">>
 ```
 
 ## Reference
