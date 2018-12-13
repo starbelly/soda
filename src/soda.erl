@@ -7,7 +7,7 @@
 -module(soda).
 
 % Helpers
--export([nonce/1, rand/1]).
+-export([nonce/1, rand/1, bin2hex/1]).
 
 % Password hashing
 -export([hash/1, hash/2, hash_init/0, hash_init/1, hash_update/2, hash_final/1, password_hash/1, password_verify/2]).
@@ -20,6 +20,10 @@
             aead_xchacha20poly1305_ietf => 24
          }
        ).
+
+-spec bin2hex(binary()) -> binary().
+bin2hex(Bin) ->
+    soda_api:bin2hex(Bin).
 
 %% @doc
 %% The aead_encrypt/2 function returns an encrypted binary created from the

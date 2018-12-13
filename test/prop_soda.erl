@@ -10,6 +10,13 @@
 %%% Properties %%%
 %%%%%%%%%%%%%%%%%%
 
+prop_bin2hex() ->
+    ?FORALL({Bin}, {binary()},
+            begin
+                Hex = soda:bin2hex(Bin),
+                is_binary(Hex)
+            end).
+
 %% ------------------------------------------------------------
 %% * randombytes/1
 prop_rand() ->
