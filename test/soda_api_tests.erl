@@ -2,7 +2,17 @@
 -compile(export_all).
 -include_lib("eunit/include/eunit.hrl").
 
-generichash_test() -> 
+box_test() ->
+    Nonce = soda_api:randombytes(24),
+    {ok, BobPk, BobSk} = soda_api:box_keypair(),
+    {ok, AlicePk, AliceSk} = soda_api:box_keypair(),
+    {ok, C} = soda_api:box(<<"Hola">>, Nonce, AlicePk, BobSk),
+    {ok, <<"Hola">>} = soda_api:box_open(C, Nonce, BobPk, AliceSk),
+    {error, encrypt_failed} = soda_api:box_open(C, Nonce, BobPk, BobSk),
+    {error, decrypt_failed} = soda_api:box_open(C, Nonce, AlicePk, AliceSk),
+    ok.
+
+generichash_test() ->
     {ok, Ref} = soda_api:generichash_init(
                                           <<126,137,250,131,34,27,214,236,37,85,39,247,4,219,15,199,168,124,136,97,14,161,249,79,248,169,226,9,120,68,172,129>>),
     {ok, Ref1} =

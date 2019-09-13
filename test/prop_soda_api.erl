@@ -18,6 +18,19 @@ prop_bin2hex() ->
                 is_binary(Hex)
             end).
 
+prop_box() ->
+    ?FORALL({Msg}, {binary(24)},
+        begin
+            Nonce = soda_api:randombytes(24),
+            {ok, BobPk, BobSk} = soda_api:box_keypair(),
+            {ok, AlicePk, AliceSk} = soda_api:box_keypair(),
+            {ok, C} = soda_api:box(Msg, Nonce, AlicePk, BobSk),
+            {ok, Msg} = soda_api:box_open(C, Nonce, BobPk, AliceSk),
+            {error, decrypt_failed} = soda_api:box_open(C, Nonce, BobPk, BobSk),
+            {error, decrypt_failed} = soda_api:box_open(C, Nonce, AlicePk, AliceSk),
+            true
+        end).
+
 prop_generichash() ->
     ?FORALL({Msg, Key}, {non_empty(binary(24)), binary(24)},
             begin
@@ -44,7 +57,7 @@ prop_generichash_update() ->
             begin
                 {ok, State} = soda_api:generichash_init(Key),
                 true = is_reference(State),
-                {ok, State1} = soda_api:generichash_update(State, Msg),
+                {ok, _State1} = soda_api:generichash_update(State, Msg),
                 true
             end).
 
@@ -108,7 +121,7 @@ prop_randombytes_neg_int_fail() ->
     catch
         error:badarg          -> true;
         error:function_clause -> true
-    end    
+    end
   end).
 
 
@@ -257,9 +270,9 @@ prop_sign_seed_keypair() ->
 prop_sign() ->
     ?FORALL({Msg},
         {binary()},
-        begin 
+        begin
             {ok, _Pk, Sk} = soda_api:sign_keypair(),
-            case soda_api:sign(Msg, Sk) of 
+            case soda_api:sign(Msg, Sk) of
                 B when is_binary(B) -> true;
                 _ -> false
             end
@@ -268,7 +281,7 @@ prop_sign() ->
 prop_sign_open() ->
     ?FORALL({Msg},
         {non_empty(binary())},
-        begin 
+        begin
             {ok, Pk, Sk} = soda_api:sign_keypair(),
             S = soda_api:sign(Msg, Sk),
             case soda_api:sign_open(S, Pk) of
@@ -281,9 +294,9 @@ prop_sign_open() ->
 prop_sign_detached() ->
     ?FORALL({Msg},
         {non_empty(binary())},
-        begin 
+        begin
             {ok, _Pk, Sk} = soda_api:sign_keypair(),
-            case soda_api:sign_detached(Msg, Sk) of 
+            case soda_api:sign_detached(Msg, Sk) of
                 B when is_binary(B) -> true;
                 _ -> false
             end
@@ -292,7 +305,7 @@ prop_sign_detached() ->
 prop_sign_verify_detached() ->
     ?FORALL({Msg},
         {non_empty(binary())},
-        begin 
+        begin
             {ok, Pk, Sk} = soda_api:sign_keypair(),
             S = soda_api:sign_detached(Msg, Sk),
             case soda_api:sign_verify_detached(S, Msg,  Pk) of
