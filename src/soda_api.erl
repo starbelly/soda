@@ -1,12 +1,19 @@
 %%% @author Bryan Paxton <starbelly@pobox.com>
 %%% @doc The soda_api is the lowest level interface of the soda library. It is
 %%% highly recommended to review the official libsodium documentation before
-%%% making use of this module.  
+%%% making use of this module.
 %%% @end.
 -module(soda_api).
 
 -define(APPNAME, soda).
 -define(LIBNAME, soda_nif).
+
+
+-type cipher_text() :: binary().
+-type message() :: binary().
+-type nonce() :: binary().
+-type public_key() :: binary().
+-type secret_key() :: binary().
 
 % Generic hashing
 -export([
@@ -36,6 +43,9 @@
          pwhash_str_verify/2
 ]).
 
+% Public key crypto
+-export([box_keypair/0, box/4, box_open/4]).
+
 % Public Key Signatures
 -export([
          sign_keypair/0,
@@ -48,6 +58,7 @@
 
 % Random Data Generation
 -export([randombytes/1]).
+
 
 -on_load(init/0).
 
@@ -62,7 +73,7 @@ generichash(Msg) when is_binary(Msg)  ->
     crypto_generichash(Msg, <<"">>).
 
 -spec generichash(binary(), binary()) -> {ok, binary()} | {error, term()}.
-generichash(Msg, Key) when is_binary(Msg) 
+generichash(Msg, Key) when is_binary(Msg)
                             andalso is_binary(Key) ->
     crypto_generichash(Msg, Key).
 
@@ -93,24 +104,24 @@ generichash_final(State) when  is_reference(State) ->
 
 
 %% @doc
-%% The pwhash/2 function derives a key from a `Passwd' whose length is at least 
-%% `pwhash_PASSWD_MIN' bytes and a `Salt' whose size is `crypto_pwhash_SALTBYTES' bytes. 
+%% The pwhash/2 function derives a key from a `Passwd' whose length is at least
+%% `pwhash_PASSWD_MIN' bytes and a `Salt' whose size is `crypto_pwhash_SALTBYTES' bytes.
 %% Returns a binary with a minumum length of at least `crypto_pwhash_BYTES_MIN'
 %% and at most `crypto_pwhash_BYTES_MAX'.
 %% @end
 -spec pwhash(binary(), binary()) -> {ok, binary()} | {error, term()}.
-pwhash(Passwd, Salt) when is_binary(Passwd) 
+pwhash(Passwd, Salt) when is_binary(Passwd)
                           andalso is_binary(Salt) ->
     crypto_pwhash(Passwd, Salt).
 
 %% @doc
 %%  The pwhash_str/1 function is used for generating hashed passwords that are
-%%  suitable for storage (e.g., RDBMS, Menesia, etc.) 
+%%  suitable for storage (e.g., RDBMS, Menesia, etc.)
 %%% Specifically, the `Passwd' which shall have a minimum length of
 %%% `crypto_pwhash_PASSWD_MIN' is hashed using a memory-hard, CPU-intensive hash
 %%% function applied to the password passwd of len. The salt required for the
 %%% hashing along with all parameters needed to verify a password against the
-%%% hash is stored in the returned binary. 
+%%% hash is stored in the returned binary.
 %% @end
 -spec pwhash_str(binary()) -> {ok, binary()} | {error, term()}.
 pwhash_str(Passwd) when is_binary(Passwd) ->
@@ -127,7 +138,7 @@ pwhash_str(Passwd) when is_binary(Passwd) ->
 %% supplied `HashStr. `Passwd' should be at least `crypto_pwhash_PASSWD_MIN'
 %% @end
 -spec pwhash_str_verify(binary(), iodata()) -> boolean().
-pwhash_str_verify(HashStr, Passwd) when is_binary(HashStr) 
+pwhash_str_verify(HashStr, Passwd) when is_binary(HashStr)
                                         andalso is_binary(Passwd) ->
     crypto_pwhash_str_verify(HashStr, Passwd).
 
@@ -137,6 +148,30 @@ pwhash_str_verify(HashStr, Passwd) when is_binary(HashStr)
 -spec randombytes(non_neg_integer()) -> binary().
 randombytes(N) when is_integer(N) andalso N >= 0 ->
     crypto_randombytes(N).
+
+%% @doc
+%% The box_keypair/0 function randomly generates a secret key with a size of
+%% `crypto_box_SECRETKEYBYTES' bytes and a corresponding public key with a size
+%% of crypto_box_PUBLICKEYBYTES
+%% @end
+-spec box_keypair() -> {binary(), binary()}.
+box_keypair() ->
+    crypto_box_keypair().
+
+%% @doc
+%% The box/4 function encrypts a message with a recipient's public key pk, a
+%% sender's secret key and the provided nonce.
+%% @end
+-spec box(message(), nonce(), public_key(), secret_key()) -> {ok, binary()} | {error, term()}.
+box(M, N, Pk, Sk) ->
+    crypto_box(M, N, Pk, Sk).
+
+%% @doc
+%% The box_open/4 function verifies and decrypts a ciphertext produced by box/4.
+%% @end
+-spec box_open(cipher_text(), nonce(), public_key(), secret_key()) -> {ok, message()} | {error, term()}.
+box_open(C, N, Pk, Sk) ->
+    crypto_box_open(C, N, Pk, Sk).
 
 %% @doc
 %% The sign_keypair/0 function randomly generates a secret key with a size of
@@ -166,7 +201,7 @@ sign_seed_keypair(Seed) when is_binary(Seed) ->
       M  :: binary(),
       Sk :: binary(),
       Ds :: binary().
-sign(M, Sk) when is_binary(M) 
+sign(M, Sk) when is_binary(M)
                           andalso is_binary(Sk) ->
     crypto_sign(M, Sk).
 
@@ -180,7 +215,7 @@ sign(M, Sk) when is_binary(M)
       Sm ::  binary(),
       Pk :: binary(),
       Ds :: binary().
-sign_open(Sm, Pk) when is_binary(Sm) 
+sign_open(Sm, Pk) when is_binary(Sm)
                           andalso is_binary(Pk) ->
     crypto_sign_open(Sm,  Pk).
 
@@ -194,7 +229,7 @@ sign_open(Sm, Pk) when is_binary(Sm)
       M  :: binary(),
       Sk :: binary(),
       Ds :: binary().
-sign_detached(M, Sk) when is_binary(M) 
+sign_detached(M, Sk) when is_binary(M)
                           andalso is_binary(Sk) ->
     crypto_sign_detached(M, Sk).
 
@@ -216,7 +251,7 @@ sign_verify_detached(Sig, M, Pk) when is_binary(Sig)
     end.
 
 %% ----------------------
-%% @doc 
+%% @doc
 %% aead_xchacha20poly1305_ietf_keygen/0 generates a random key is
 %% equivalent to calling `randombytes/1' with `aead_xchacha20poly1305_ietf_KEYBYTES'
 %% @end
@@ -225,7 +260,7 @@ aead_xchacha20poly1305_ietf_keygen() ->
     crypto_aead_xchacha20poly1305_ietf_keygen().
 
 %% ----------------------
-%% @doc 
+%% @doc
 %% aead_xchacha20poly1305_ietf_encrypt/4 encrypts `Message' with additional data
 %% `AD' using `Key' and `Nonce'. Returns the encrypted message followed by
 %% `aead_chacha20poly1305_ietf_ABYTES/0' bytes of MAC.
@@ -234,8 +269,8 @@ aead_xchacha20poly1305_ietf_keygen() ->
                                           binary()) -> binary() | {error,
                                                                    term()}.
 aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key) when is_bitstring(Msg)
-                                                         andalso is_binary(AD) 
-                                                         andalso is_binary(Nonce) 
+                                                         andalso is_binary(AD)
+                                                         andalso is_binary(Nonce)
                                                          andalso  is_binary(Key) ->
     crypto_aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key).
 
@@ -243,15 +278,15 @@ aead_xchacha20poly1305_ietf_encrypt(Msg, AD, Nonce, Key) when is_bitstring(Msg)
                                           binary()) -> binary() | {error,
                                                                    term()}.
 
-%% @doc 
+%% @doc
 %% aead_xchacha20poly1305_ietf_decrypt/4 decrypts ciphertext `CT' with additional
 %% data `AD' using `Key' and `Nonce'. Note: `CipherText' should contain
 %% `crypto_aead_xchacha20poly1305_ietf_ABYTES' bytes that is the MAC. Returns the decrypted
 %% message.
 %% @end
-aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when is_binary(CT) 
-                                                        andalso is_binary(AD) 
-                                                        andalso is_binary(Nonce) 
+aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key) when is_binary(CT)
+                                                        andalso is_binary(AD)
+                                                        andalso is_binary(Nonce)
                                                         andalso  is_binary(Key) ->
     crypto_aead_xchacha20poly1305_ietf_decrypt(CT, AD, Nonce, Key).
 
@@ -297,6 +332,15 @@ crypto_pwhash_str_verify(_Hash, _Password)
     -> erlang:nif_error(nif_not_loaded).
 
 crypto_randombytes(_RequestedSize)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_box_keypair()
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_box(_M, _N, _Pk, _Sk)
+    -> erlang:nif_error(nif_not_loaded).
+
+crypto_box_open(_C, _N, _Pk, _Sk)
     -> erlang:nif_error(nif_not_loaded).
 
 crypto_sign_keypair()

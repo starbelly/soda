@@ -249,7 +249,7 @@ enif_crypto_generichash_update(ErlNifEnv * env, int argc,
 	crypto_generichash_state *new_state =
 	    (crypto_generichash_state *) ALLOC_RESOURCE(gen_hash_state_t, b);
 
-	memcpy(new_state->h, state->h, sizeof(*new_state));
+	memcpy(new_state, state, sizeof(*new_state));
 
 	if (0 != crypto_generichash_update(new_state, m.data, m.size)) {
 		return ENCRYPT_FAILED_ERROR(env);
@@ -379,6 +379,106 @@ enif_crypto_pwhash_str_verify(ErlNifEnv * env, int argc,
 	return retVal;
 }
 
+static
+ERL_NIF_TERM enif_crypto_box_keypair(ErlNifEnv * env, int argc,
+        ERL_NIF_TERM const UNUSED(argv[])) {
+  ErlNifBinary pk, sk;
+
+  if (0 != argc) { 
+    return BADARG(env);
+  }
+
+
+	if (!ALLOC_BIN(crypto_box_PUBLICKEYBYTES, &pk)
+	    || !ALLOC_BIN(crypto_box_SECRETKEYBYTES, &sk)) {
+		return OOM_ERROR(env);
+	}
+
+
+	crypto_box_keypair(pk.data, sk.data);
+
+	return OK_TUPLE3(env, MK_BIN(env, &pk), MK_BIN(env, &sk));
+}
+
+static
+ERL_NIF_TERM enif_crypto_box(ErlNifEnv * env, int argc,
+			      ERL_NIF_TERM const argv[])
+{
+
+    ErlNifBinary m, n, c, pk, sk;
+
+
+	if ((4 != argc)
+	    || (!GET_BIN(env, argv[0], &m))
+        || (!GET_BIN(env, argv[1], &n))
+	    || (!GET_BIN(env, argv[2], &pk))
+        || (!GET_BIN(env, argv[3], &sk))) {
+		return BADARG(env);
+	}
+
+    if (pk.size != crypto_box_PUBLICKEYBYTES) { 
+        return BADARG(env);
+    }
+
+	if (sk.size != crypto_box_SECRETKEYBYTES) {
+		return BADARG(env);
+	}
+
+	if (!ALLOC_BIN(crypto_box_MACBYTES  + m.size, &c)) {
+		return OOM_ERROR(env);
+	}
+
+    if (0 != crypto_box_easy(c.data, m.data, m.size, n.data,
+                    pk.data, sk.data)) {
+        return ENCRYPT_FAILED_ERROR(env);
+    }
+
+    return OK_TUPLE(env, MK_BIN(env, &c));
+
+}
+
+
+static
+ERL_NIF_TERM enif_crypto_box_open(ErlNifEnv * env, int argc,
+			      ERL_NIF_TERM const argv[])
+{
+
+    ErlNifBinary m, n, c, pk, sk;
+
+
+	if ((4 != argc)
+	    || (!GET_BIN(env, argv[0], &c))
+        || (!GET_BIN(env, argv[1], &n))
+	    || (!GET_BIN(env, argv[2], &pk))
+        || (!GET_BIN(env, argv[3], &sk))) {
+		return BADARG(env);
+	}
+
+    if (pk.size != crypto_box_PUBLICKEYBYTES) { 
+        return BADARG(env);
+    }
+
+	if (sk.size != crypto_box_SECRETKEYBYTES) {
+		return BADARG(env);
+	}
+
+
+    if (c.size < crypto_box_MACBYTES) { 
+         return BADARG(env);
+    }
+
+	if (!ALLOC_BIN(c.size - crypto_box_MACBYTES, &m)) {
+		return OOM_ERROR(env);
+	}
+
+    if (0 != crypto_box_open_easy(m.data, c.data, c.size, n.data,
+                    pk.data, sk.data)) {
+        return DECRYPT_FAILED_ERROR(env);
+    }
+
+    return OK_TUPLE(env, MK_BIN(env, &m));
+
+}
 static
 ERL_NIF_TERM enif_crypto_sign_keypair(ErlNifEnv * env, int argc,
 				      ERL_NIF_TERM const UNUSED(argv[]))
@@ -548,6 +648,7 @@ enif_crypto_aead_xchacha20poly1305_ietf_encrypt(ErlNifEnv * env, int argc,
 						ERL_NIF_TERM const argv[])
 {
 	ErlNifBinary msg, ad, nonce, key, ct;
+
 	if ((4 != argc) || (!GET_BIN(env, argv[0], &msg))
 	    || (!GET_BIN(env, argv[1], &ad))
 	    || (!GET_BIN(env, argv[2], &nonce))
@@ -649,6 +750,15 @@ static ErlNifFunc nif_funcs[] = {
 	 "crypto_pwhash_str_verify", 2,
 	 enif_crypto_pwhash_str_verify, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
+	 "crypto_box_keypair", 0,
+	 enif_crypto_box_keypair, ERL_NIF_DIRTY_JOB_CPU_BOUND},
+    {
+     "crypto_box", 4,
+     enif_crypto_box, ERL_NIF_DIRTY_JOB_CPU_BOUND},
+     {
+     "crypto_box_open", 4,
+     enif_crypto_box_open, ERL_NIF_DIRTY_JOB_CPU_BOUND}, 
+    {
 	 "crypto_sign_keypair", 0,
 	 enif_crypto_sign_keypair, ERL_NIF_DIRTY_JOB_CPU_BOUND},
 	{
