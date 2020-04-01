@@ -1,10 +1,16 @@
 ![Soda](assets/logo-xsmall.png) Soda [![Hex Version](https://img.shields.io/hexpm/v/soda.svg)](https://hex.pm/packages/soda) [![Gitlab-CI](https://gitlab.com/starbelly/soda/badges/master/pipeline.svg)](https://gitlab.com/starbelly/soda/commits/master) [![Travis-CI](https://travis-ci.org/starbelly/soda.svg?branch=master)](https://travis-ci.org/starbelly/soda) [![License](https://img.shields.io/badge/License-MIT-blue.svg)]()
 ============
 
+-------------------------------------------
 ***This project is no longer maintained***
-
+-------------------------------------------
 Please use and contribute to [enacl](https://github.com/jlouis/enacl/)
+-------------------------------------------
 
+![therecanonlybeone](https://media.giphy.com/media/9Jmb2idg10qJSygvTQ/giphy.gif)
+ 
+  
+ 
 Libsodium bindings for Erlang
 
 ## About
